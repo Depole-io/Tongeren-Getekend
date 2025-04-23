@@ -161,7 +161,7 @@ export default function MapPage() {
   const fallbackCoordinates = [50.7833, 5.4703];
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-900 via-purple-700 to-orange-400">
+    <div className="min-h-screen flex items-center justify-center bg-black">
       {error ? (
         <div className="text-red-500">Error: {error}</div>
       ) : (
