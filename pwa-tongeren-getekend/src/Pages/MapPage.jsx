@@ -1,7 +1,14 @@
-import { MapContainer, TileLayer, Marker, Popup, useMap, CircleMarker } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  useMap,
+  CircleMarker,
+} from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
@@ -10,34 +17,29 @@ import existingLocation from "leaflet/dist/images/existinglocation.svg";
 import lostlocation from "leaflet/dist/images/lostlocation.svg";
 import mylocation from "leaflet/dist/images/mylocation.svg";
 
-// Default Leaflet marker fix
+// Fix default Leaflet marker icon
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: markerIcon2x,
   iconUrl: markerIcon,
   shadowUrl: markerShadow,
   iconSize: [39, 39],
-  iconAnchor: [19.5, 39], // Center the marker properly
+  iconAnchor: [19.5, 39],
 });
 
-// Function to get the correct Pokémon status icon
-const getBuildingIcon = (status) => {
+const getBuildingIcon = (exists) => {
   let iconUrl;
-  switch (status) {
-    case "Existing":
-      iconUrl = existingLocation;
-      break;
-    case "Destroyed":
-      iconUrl = lostlocation;
-      break;
-    case "found":
-      iconUrl = mylocation;
-      break;
-    default:
-      iconUrl = markerIcon;
+  if (exists === true || exists === "true") {
+    iconUrl = existingLocation;
+  } else if (exists === false || exists === "false") {
+    iconUrl = lostlocation;
+  } else if (exists === "found") {
+    iconUrl = mylocation;
+  } else {
+    iconUrl = markerIcon;
   }
 
   return new L.Icon({
-    iconUrl: iconUrl,
+    iconUrl,
     iconRetinaUrl: iconUrl,
     shadowUrl: markerShadow,
     iconSize: [39, 39],
@@ -45,19 +47,15 @@ const getBuildingIcon = (status) => {
   });
 };
 
-// Component to move map focus when Pokémon is selected
 const MapFocus = ({ coordinates, onZoomComplete, reset }) => {
   const map = useMap();
 
   useEffect(() => {
     if (reset) {
-      // Reset map to default when no key is provided
       map.setView([50.7833, 5.4703], 15);
       onZoomComplete(false);
     } else if (coordinates) {
       map.flyTo(coordinates, 15, { animate: true, duration: 1.5 });
-
-      // Wait for animation to complete before triggering the pulse effect
       setTimeout(() => {
         onZoomComplete(true);
       }, 1500);
@@ -67,7 +65,6 @@ const MapFocus = ({ coordinates, onZoomComplete, reset }) => {
   return null;
 };
 
-// Pulsating animation, starts only after zoom is complete
 const PulsatingMarker = ({ coordinates, isZoomed }) => {
   const [radius, setRadius] = useState(10);
 
@@ -76,13 +73,13 @@ const PulsatingMarker = ({ coordinates, isZoomed }) => {
 
     let growing = true;
     const interval = setInterval(() => {
-      setRadius((prevRadius) => {
+      setRadius((prev) => {
         if (growing) {
-          if (prevRadius >= 20) growing = false;
-          return prevRadius + 0.5;
+          if (prev >= 20) growing = false;
+          return prev + 0.5;
         } else {
-          if (prevRadius <= 10) growing = true;
-          return prevRadius - 0.5;
+          if (prev <= 10) growing = true;
+          return prev - 0.5;
         }
       });
     }, 50);
@@ -106,59 +103,76 @@ const PulsatingMarker = ({ coordinates, isZoomed }) => {
 };
 
 export default function MapPage() {
-  const { key } = useParams();
-  const [buildingData, setPokemonData] = useState([]);
+  const { url } = useParams();
+  const [buildingData, setBuildingData] = useState([]);
   const [error, setError] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
   const [focusCoordinates, setFocusCoordinates] = useState(null);
   const [isZoomed, setIsZoomed] = useState(false);
   const [resetMap, setResetMap] = useState(false);
+  const mapRef = useRef(null);
+
+  const fallbackCoordinates = [50.7833, 5.4703];
 
   useEffect(() => {
-    fetch("/Buildings.json")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
+    fetch("https://grondslag.be/api/tongerengetekend")
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        return res.json();
       })
       .then((data) => {
-        setPokemonData(data);
+        setBuildingData(data);
 
-        if (key) {
-          const selectedBuilding = data.find((building) => building.key === key);
-          if (selectedBuilding && selectedBuilding.coordinates) {
-            setFocusCoordinates(selectedBuilding.coordinates);
-            setResetMap(false); // Don't reset if a building is selected
+        if (url) {
+          const selected = data.find((b) => b.url === url);
+          if (
+            selected &&
+            typeof selected.lat === "number" &&
+            typeof selected.long === "number"
+          ) {
+            setFocusCoordinates([selected.lat, selected.long]);
+            setResetMap(false);
           } else {
-            console.warn(`No valid coordinates found for building key: ${key}`);
+            console.warn("Invalid building coords for:", url);
             setFocusCoordinates(null);
-            setResetMap(true); // Reset map if coordinates are invalid
+            setResetMap(true);
           }
         } else {
           setFocusCoordinates(null);
-          setResetMap(true); // Reset map when no building key is provided
+          setResetMap(true);
+
+          // ✅ Fit map to all markers when no building is selected
+          const validCoords = data
+            .filter((b) => typeof b.lat === "number" && typeof b.long === "number")
+            .map((b) => [b.lat, b.long]);
+
+          if (validCoords.length > 0) {
+            const bounds = L.latLngBounds(validCoords);
+            setTimeout(() => {
+              const map = mapRef.current;
+              if (map && bounds.isValid()) {
+                map.fitBounds(bounds, { padding: [50, 50] });
+              }
+            }, 500);
+          }
         }
       })
-      .catch((error) => {
-        console.error("Failed to load Building data:", error);
-        setError(error.message);
+      .catch((err) => {
+        console.error("Failed to load buildings:", err);
+        setError(err.message);
       });
 
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setUserLocation([position.coords.latitude, position.coords.longitude]);
+        (pos) => {
+          setUserLocation([pos.coords.latitude, pos.coords.longitude]);
         },
-        (error) => {
-          console.error("Error getting user location:", error);
+        (err) => {
+          console.error("Geolocation error:", err);
         }
       );
     }
-  }, [key]);
-
-  // Fallback location for when coordinates are not available
-  const fallbackCoordinates = [50.7833, 5.4703];
+  }, [url]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black">
@@ -166,59 +180,72 @@ export default function MapPage() {
         <div className="text-red-500">Error: {error}</div>
       ) : (
         <MapContainer
-          center={focusCoordinates || userLocation || fallbackCoordinates}
+          center={
+            Array.isArray(focusCoordinates) && focusCoordinates.length === 2
+              ? focusCoordinates
+              : userLocation || fallbackCoordinates
+          }
           zoom={10}
-          className="w-110 h-[600px] rounded-lg shadow-lg"
+          className="w-110 h-[800px] rounded-lg shadow-lg justify-center"
+          whenCreated={(mapInstance) => {
+            mapRef.current = mapInstance;
+          }}
         >
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
 
-          {/* Reset map when key is missing, otherwise focus on building */}
           <MapFocus
             coordinates={focusCoordinates}
             onZoomComplete={setIsZoomed}
             reset={resetMap}
           />
 
-          {focusCoordinates && <PulsatingMarker coordinates={focusCoordinates} isZoomed={isZoomed} />}
+          {focusCoordinates && (
+            <PulsatingMarker coordinates={focusCoordinates} isZoomed={isZoomed} />
+          )}
 
           {userLocation && (
             <Marker
               position={userLocation}
-              icon={new L.Icon({
-                iconUrl: mylocation,
-                iconRetinaUrl: mylocation,
-                shadowUrl: markerShadow,
-                iconSize: [39, 39],
-                iconAnchor: [19.5, 39],
-              })}
+              icon={
+                new L.Icon({
+                  iconUrl: mylocation,
+                  iconRetinaUrl: mylocation,
+                  shadowUrl: markerShadow,
+                  iconSize: [39, 39],
+                  iconAnchor: [19.5, 39],
+                })
+              }
             >
               <Popup>You are here!</Popup>
             </Marker>
           )}
 
           {buildingData.map((building) => {
-            if (!building.coordinates) {
-              return null; // Skip buildings with invalid coordinates
+            if (
+              typeof building.lat !== "number" ||
+              typeof building.long !== "number"
+            ) {
+              return null;
             }
 
             return (
               <Marker
                 key={building.key}
-                position={building.coordinates}
-                icon={getBuildingIcon(building.status)}
+                position={{ lat: building.lat, lng: building.long }}
+                icon={getBuildingIcon(building.exists)}
               >
                 <Popup>
                   <div
                     className="text-center cursor-pointer w-40"
-                    onClick={() => {
-                      window.location.href = `/details/${building.key}`;
-                    }}
+                    onClick={() =>
+                      (window.location.href = `/details/${building.url}`)
+                    }
                   >
                     <img
-                      src={building.images}
+                      src={building.image_front}
                       alt={building.name}
                       className="w-80 h-40 mx-auto mb-2"
                     />

@@ -4,7 +4,7 @@ function HomePage() {
   const [buildingData, setBuildingData] = useState([]);
 
   useEffect(() => {
-    fetch("/Buildings.json")
+    fetch("https://grondslag.be/api/tongerengetekend")
       .then((response) => response.json())
       .then((data) => {
         // Shuffle the array and select only 5 random buildings
@@ -27,15 +27,15 @@ function HomePage() {
       <div className="flex flex-col gap-6 w-full max-w-2xl sm:max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg">
         {buildingData.map((building) => (
           <div
-            key={building.key}
+            key={building.url}
             className="bg-white rounded-xl shadow-lg overflow-hidden w-full sm:w-[375px] lg:w-[400px] xl:w-[450px] mx-auto cursor-pointer"
             onClick={() => {
-              window.location.href = `/details/${building.key}`;
+              window.location.href = `/details/${building.url}`;
             }}
           >
             <div className="w-full bg-purple-300 flex items-center justify-center overflow-hidden">
               <img 
-                src={building.images} 
+                src={building.image_front} 
                 alt={building.name} 
                 className="w-full h-full object-cover"
               />

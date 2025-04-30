@@ -1,8 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
+
+
+
 function DetailsPage() {
-  const { key } = useParams();
+  const { url } = useParams();
   const navigate = useNavigate();
   const [buildingData, setBuildingData] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -12,18 +15,20 @@ function DetailsPage() {
   const containerRef = useRef(null);
 
   useEffect(() => {
-    fetch("/Buildings.json")
+    fetch("https://grondslag.be/api/tongerengetekend")
       .then((response) => response.json())
       .then((data) => {
-        const foundBuilding = data.find((building) => building.key === key);
+        const foundBuilding = data.find((building) => building.url === url);
         setBuildingData(foundBuilding);
       })
       .catch((error) => console.error("Error fetching building data:", error));
-  }, [key]);
+  }, [url]);
 
-  const statusIcon = (status) => {
-    switch (status.toLowerCase()) {
-      case "existing":
+  const statusIcon = (exists) => {
+    const val = String(exists).toLowerCase(); // safely convert any value to string
+  
+    switch (val) {
+      case "true":
         return (
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -40,7 +45,7 @@ function DetailsPage() {
             />
           </svg>
         );
-      case "destroyed":
+      case "false":
         return (
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -62,7 +67,7 @@ function DetailsPage() {
     }
   };
 
-  if (!buildingData) return <div className="text-white">Loading...</div>;
+  if (!buildingData) return <div className="text-black">Loading...</div>;
 
   const openModal = () => {
   const img = imageRef.current;
@@ -138,11 +143,11 @@ function DetailsPage() {
     <>
       <div className="min-h-screen flex items-center justify-center pb-[90px] mb-[54px] sm:p-8">
       <div 
-        className={`w-full max-w-lg h-full flex flex-col text-left shadow-lg sm:rounded-xl overflow-hidden ${buildingData.gradiant}`}
+        className={`w-full max-w-lg h-full flex flex-col text-left shadow-lg sm:rounded-xl overflow-hidden `}
       >
-          <div className={'w-full flex-grow min-h-0 flex items-center justify-center ${buildingData.gradiant} border-b-[1px] border-gray-500'}>
+          <div className={'w-full flex-grow min-h-0 flex items-center justify-center border-b-[1px] border-gray-500'}>
             <img
-              src={buildingData.images}
+              src={buildingData.image_front}
               alt={buildingData.name}
               className="w-full h-full object-cover  "
             />
@@ -151,7 +156,7 @@ function DetailsPage() {
           <div className="flex flex-col items-center space-y-4 w-full">
           <div className="flex items-center justify-end space-x-4 w-full">
   <button 
-    onClick={() => navigate(`/map/${buildingData.key}`)} 
+    onClick={() => navigate(`/map/${buildingData.url}`)} 
     className="px-2 py-2 bg-black text-white font-semibold rounded-md text-sm shadow-md"
   >
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
@@ -160,7 +165,7 @@ function DetailsPage() {
   </button>
 
   <div className="p-2 bg-black rounded-md flex items-center justify-center">
-    {statusIcon(buildingData.status)}
+    {statusIcon(buildingData.exists)}
   </div>
 
   <button
@@ -184,9 +189,9 @@ function DetailsPage() {
   </button>
 </div>
 
-              <h1 className="text-3xl font-bold text-white text-center">{buildingData.name}</h1>
+              <h1 className="text-3xl font-bold text-black text-center">{buildingData.name}</h1>
             </div>
-            <div className="text-lg text-white leading-relaxed whitespace-pre-line">
+            <div className="text-lg text-black leading-relaxed whitespace-pre-line">
               {buildingData.description}
             </div>
           </div>
@@ -195,7 +200,7 @@ function DetailsPage() {
 
       <div className="fixed bottom-0 left-0 w-full px-4 pb-[54px]">
         <audio controls className="w-full rounded-md shadow-md">
-          <source src="/assets/mp3/The Beatles - Blackbird (lyrics).mp3" type="audio/mp3" />
+          <source src={buildingData.soundfile} type="audio/mp3" />
           Your browser does not support the audio element.
         </audio>
       </div>
@@ -213,7 +218,7 @@ function DetailsPage() {
               onMouseDown={handleMouseDown}
               onTouchStart={handleMouseDown}
             >
-              <img src={buildingData.originalImage} alt="Zoomed View" className="max-w-none" />
+              <img src={buildingData.image_large} alt="Zoomed View" className="max-w-none" />
             </div>
             <div className="absolute bottom-4 flex space-x-4">
               <button onClick={() => handleZoom("out")} className="px-4 py-2 bg-gray-800 text-white rounded-md">-</button>

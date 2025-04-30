@@ -1,3 +1,4 @@
+import React from "react";
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import HomePage from './Pages/HomePage';
 import GalleryPage from './Pages/GalleryPage';
@@ -6,16 +7,22 @@ import MapPage from './Pages/MapPage';
 import AboutUsPage from './Pages/AboutUsPage';
 import './index.css';
 
+
+
 function App() {
+  
   return (
+
+    
+
     <Router>
       <div className="min-h-screen flex flex-col">
         <div className="flex-grow">
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/gallery" element={<GalleryPage />} />
-            <Route path="/details/:key" element={<DetailsPage />} />
-            <Route path="/map/:key?" element={<MapPage/>} /> {/* ✅ Optional param */}
+            <Route path="/details/:url" element={<DetailsPage />} />
+            <Route path="/map/:url?" element={<MapPage/>} /> {/* ✅ Optional param */}
             <Route path="/about" element={<AboutUsPage />} />
 
             {/* Add other routes here */}
