@@ -1,49 +1,61 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
-import { VitePWA } from 'vite-plugin-pwa';
-
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
+import { VitePWA } from "vite-plugin-pwa";
 
 // https://vite.dev/config/
 export default defineConfig({
   optimizeDeps: {
     include: ["react-leaflet", "leaflet"],
   },
-  plugins: [tailwindcss(),
+  plugins: [
+    tailwindcss(),
     react(),
-    VitePWA({ 
-      registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
+    VitePWA({
+      devOptions: {
+        enabled: true,
+      },
+      strategies: "injectManifest",
+      srcDir: "src",
+      filename: "sw.ts",
+      registerType: "autoUpdate",
+      injectManifest: {
+        swDest: "dist/sw.js",
+      },
+      includeAssets: ["favicon.ico", "apple-touch-icon.png", "mask-icon.svg"],
       manifest: {
-        name: 'Tongeren Getekend',
-        short_name: 'Tongeren Getekend',
-        theme_color: '#ffffff',
+        name: "Tongeren Getekend",
+        short_name: "Tongeren Getekend",
+        theme_color: "#ffffff",
+        background_color: "#ffffff",
+        starturl: "/",
+        display: "standalone",
+        orientation: "portrait",
         icons: [
-            {
-                src: 'pwa-64x64.png',
-                sizes: '64x64',
-                type: 'image/png'
-            },
-            {
-                src: 'pwa-192x192.png',
-                sizes: '192x192',
-                type: 'image/png'
-            },
-            {
-                src: 'pwa-512x512.png',
-                sizes: '512x512',
-                type: 'image/png',
-                purpose: 'any'
-            },
-            {
-                src: 'maskable-icon-512x512.png',
-                sizes: '512x512',
-                type: 'image/png',
-                purpose: 'maskable'
-            }
+          {
+            src: "pwa-64x64.png",
+            sizes: "64x64",
+            type: "image/png",
+          },
+          {
+            src: "pwa-192x192.png",
+            sizes: "192x192",
+            type: "image/png",
+          },
+          {
+            src: "pwa-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "any",
+          },
+          {
+            src: "maskable-icon-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "maskable",
+          },
         ],
-      }, 
+      },
     }),
   ],
-  
-})
+});
