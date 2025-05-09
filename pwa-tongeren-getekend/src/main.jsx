@@ -1,52 +1,52 @@
-import React from 'react'
-import { createRoot } from 'react-dom/client'
-import App from './App'
-import './index.css'
+import React, { useState, useEffect } from "react";
+import { createRoot } from "react-dom/client";
+import App from "./App";
+import "./index.css";
 
-const container = document.getElementById('root')
-const root = createRoot(container)
+const container = document.getElementById("root");
+const root = createRoot(container);
 
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('/dist/sw.js')
-  .then((reg) => console.log('Service Worker Registered', reg))
-  .catch((err) => console.log('Error in Registering Service Worker', err))
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/dist/sw.js").then((reg) => {
+    console.log("Service Worker Registered", reg);
+  }).catch((err) => {
+    console.log("Error in Registering Service Worker", err);
+  });
 }
-class ErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false, error: null, errorInfo: null };
-  }
 
-  static getDerivedStateFromError(error) {
-    return { hasError: true, error };
-  }
+function LoadingScreen() {
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-black z-50">
+      <div className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+    </div>
+  );
+}
 
-  componentDidCatch(error, errorInfo) {
-    console.error("ErrorBoundary caught an error:", error, errorInfo);
-    this.setState({ error, errorInfo });
-  }
+function Main() {
+  const [isLoading, setIsLoading] = useState(false);
 
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div className="p-4 bg-red-900 text-white rounded-md">
-          <h2 className="font-bold text-lg mb-2">Something went wrong.</h2>
-          <details className="whitespace-pre-wrap">
-            {this.state.error && this.state.error.toString()}
-            <br />
-            {this.state.errorInfo?.componentStack}
-          </details>
-        </div>
-      );
+  useEffect(() => {
+    if (navigator.serviceWorker) {
+      navigator.serviceWorker.addEventListener("message", (event) => {
+        if (event.data.type === "PRELOADING_START") {
+          setIsLoading(true);
+        } else if (event.data.type === "PRELOADING_END") {
+          setTimeout(() => setIsLoading(false), 13000); // Ensure the loading screen lasts 13 seconds
+        }
+      });
     }
+  }, []);
 
-    return this.props.children;
-  }
+  return (
+    <>
+      {isLoading && <LoadingScreen />}
+      <App />
+    </>
+  );
 }
+
 root.render(
-  <ErrorBoundary>
   <React.StrictMode>
-    <App />
+    <Main />
   </React.StrictMode>
-  </ErrorBoundary>
-)
+);

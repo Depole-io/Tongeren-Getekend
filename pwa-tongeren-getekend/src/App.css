@@ -1,1 +1,66 @@
 @import "tailwindcss";
+
+@keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  .animate-spin {
+    animation: spin 1s linear infinite;
+  }
+  
+  .fixed {
+    position: fixed;
+  }
+  
+  .inset-0 {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+  }
+  
+  .flex {
+    display: flex;
+  }
+  
+  .items-center {
+    align-items: center;
+  }
+  
+  .justify-center {
+    justify-content: center;
+  }
+  
+  .bg-black {
+    background-color: black;
+  }
+  
+  .z-50 {
+    z-index: 50;
+  }
+  
+  .w-16 {
+    width: 4rem;
+  }
+  
+  .h-16 {
+    height: 4rem;
+  }
+  
+  .border-4 {
+    border-width: 4px;
+  }
+  
+  .border-white {
+    border-color: white;
+  }
+  
+  .border-t-transparent {
+    border-top-color: transparent;
+  }
+  
+  .rounded-full {
+    border-radius: 9999px;
+  }

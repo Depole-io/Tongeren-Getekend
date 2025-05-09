@@ -1,9 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
-
-
-
 function DetailsPage() {
   const { url } = useParams();
   const navigate = useNavigate();
@@ -15,18 +12,52 @@ function DetailsPage() {
   const containerRef = useRef(null);
 
   useEffect(() => {
-    fetch("https://grondslag.be/api/tongerengetekend")
-      .then((response) => response.json())
-      .then((data) => {
-        const foundBuilding = data.find((building) => building.url === url);
-        setBuildingData(foundBuilding);
-      })
-      .catch((error) => console.error("Error fetching building data:", error));
+    const fetchData = async () => {
+      const cacheName = "datatongerengetekend";
+      const apiUrl = "https://grondslag.be/api/tongerengetekend";
+
+      try {
+        // Open the cache
+        const cache = await caches.open(cacheName);
+
+        // Check if the JSON file is in the cache
+        const cachedResponse = await cache.match(apiUrl);
+        if (cachedResponse) {
+          // Parse the cached response as JSON
+          const cachedData = await cachedResponse.json();
+
+          // Find the building data based on the URL parameter
+          const foundBuilding = cachedData.find(
+            (building) => building.url === url
+          );
+          if (foundBuilding) {
+            setBuildingData(foundBuilding);
+            return;
+          } else {
+            console.error("Building not found in cached data.");
+          }
+        }
+
+        // If not in cache, fetch from the network
+        const networkResponse = await fetch(apiUrl);
+        if (networkResponse.ok) {
+          const networkData = await networkResponse.json();
+          const foundBuilding = networkData.find(
+            (building) => building.url === url
+          );
+          setBuildingData(foundBuilding);
+        }
+      } catch (error) {
+        console.error("Error fetching building data:", error);
+      }
+    };
+
+    fetchData();
   }, [url]);
 
   const statusIcon = (exists) => {
     const val = String(exists).toLowerCase(); // safely convert any value to string
-  
+
     switch (val) {
       case "true":
         return (
@@ -67,27 +98,27 @@ function DetailsPage() {
     }
   };
 
-  if (!buildingData) return <div className="text-black">Loading...</div>;
+  if (!buildingData) return <div className="text-white">Loading...</div>;
 
   const openModal = () => {
-  const img = imageRef.current;
-  const container = containerRef.current;
+    const img = imageRef.current;
+    const container = containerRef.current;
 
-  if (img && container) {
-    const imgBounds = img.getBoundingClientRect();
-    const containerBounds = container.getBoundingClientRect();
+    if (img && container) {
+      const imgBounds = img.getBoundingClientRect();
+      const containerBounds = container.getBoundingClientRect();
 
-    // Calculate the zoom to fit the image within the container
-    const zoomX = containerBounds.width / imgBounds.width;
-    const zoomY = containerBounds.height / imgBounds.height;
-    const initialZoom = Math.min(zoomX, zoomY);
+      // Calculate the zoom to fit the image within the container
+      const zoomX = containerBounds.width / imgBounds.width;
+      const zoomY = containerBounds.height / imgBounds.height;
+      const initialZoom = Math.min(zoomX, zoomY);
 
-    setZoom(initialZoom);
-    setPosition({ x: 0, y: 0 }); // Center the image
-  }
+      setZoom(initialZoom);
+      setPosition({ x: 0, y: 0 }); // Center the image
+    }
 
-  setIsModalOpen(true);
-};
+    setIsModalOpen(true);
+  };
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -121,8 +152,14 @@ function DetailsPage() {
       const maxY = (bounds.height - containerBounds.height) / (2 * zoom);
 
       setPosition({
-        x: Math.max(-maxX, Math.min(maxX, startPos.x + (moveX - startX) / zoom)),
-        y: Math.max(-maxY, Math.min(maxY, startPos.y + (moveY - startY) / zoom)),
+        x: Math.max(
+          -maxX,
+          Math.min(maxX, startPos.x + (moveX - startX) / zoom)
+        ),
+        y: Math.max(
+          -maxY,
+          Math.min(maxY, startPos.y + (moveY - startY) / zoom)
+        ),
       });
     };
 
@@ -141,65 +178,80 @@ function DetailsPage() {
 
   return (
     <>
-      <div className="min-h-screen flex items-center justify-center pb-[90px] mb-[54px] sm:p-8">
-      <div 
-        className={`w-full max-w-lg h-full flex flex-col text-left shadow-lg sm:rounded-xl overflow-hidden `}
-      >
-          <div className={'w-full flex-grow min-h-0 flex items-center justify-center border-b-[1px] border-gray-500'}>
+      <div className="min-h-screen flex items-center justify-center pb-[90px] mb-[54px] sm:p-8 bg-black text-white">
+        <div className="w-full max-w-lg h-full flex flex-col text-left shadow-lg sm:rounded-xl overflow-hidden bg-gray-900 text-white">
+          <div className="w-full flex-grow min-h-0 flex items-center justify-center border-b border-gray-700">
             <img
               src={buildingData.image_front}
               alt={buildingData.name}
-              className="w-full h-full object-cover  "
+              className="w-full h-full object-cover"
             />
           </div>
           <div className="flex flex-col w-full space-y-4 p-6 sm:p-8 flex-none min-h-[40%] max-h-[50%] bg-opacity-80 rounded-b-xl">
-          <div className="flex flex-col items-center space-y-4 w-full">
-          <div className="flex items-center justify-end space-x-4 w-full">
-  <button 
-    onClick={() => navigate(`/map/${buildingData.url}`)} 
-    className="px-2 py-2 bg-black text-white font-semibold rounded-md text-sm shadow-md"
-  >
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" />
-    </svg>
-  </button>
+            <div className="flex flex-col items-center space-y-4 w-full">
+              <div className="flex items-center justify-end space-x-4 w-full">
+                <button
+                  onClick={() => navigate(`/map/${buildingData.url}`)}
+                  className="px-2 py-2 bg-black text-white font-semibold rounded-md text-sm shadow-md"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    className="size-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z"
+                    />
+                  </svg>
+                </button>
 
-  <div className="p-2 bg-black rounded-md flex items-center justify-center">
-    {statusIcon(buildingData.exists)}
-  </div>
+                <div className="p-2 bg-black rounded-md flex items-center justify-center text-white">
+                  {statusIcon(buildingData.exists)}
+                </div>
 
-  <button
-    onClick={openModal}
-    className="p-2 bg-black rounded-md flex items-center justify-center"
-  >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      strokeWidth="1.5"
-      stroke="currentColor"
-      className="size-6 text-white"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
-      />
-    </svg>
-  </button>
-</div>
+                <button
+                  onClick={openModal}
+                  className="p-2 bg-black rounded-md flex items-center justify-center text-white"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    className="size-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+                    />
+                  </svg>
+                </button>
+              </div>
 
-              <h1 className="text-3xl font-bold text-black text-center">{buildingData.name}</h1>
+              <h1 className="text-3xl font-bold text-white text-center">
+                {buildingData.name}
+              </h1>
             </div>
-            <div className="text-lg text-black leading-relaxed whitespace-pre-line">
+
+            <div className="text-lg text-white leading-relaxed whitespace-pre-line">
               {buildingData.description}
             </div>
           </div>
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-0 w-full px-4 pb-[54px]">
-        <audio controls className="w-full rounded-md shadow-md">
+      <div className="fixed bottom-0 left-0 w-full px-4 pb-[54px] bg-black">
+        <audio
+          controls
+          className="w-full rounded-md shadow-md bg-gray-800 text-white"
+        >
           <source src={buildingData.soundfile} type="audio/mp3" />
           Your browser does not support the audio element.
         </audio>
@@ -207,7 +259,10 @@ function DetailsPage() {
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
-          <div ref={containerRef} className="relative w-full h-full flex items-center justify-center overflow-hidden">
+          <div
+            ref={containerRef}
+            className="relative w-full h-full flex items-center justify-center overflow-hidden"
+          >
             <div
               ref={imageRef}
               className="cursor-grab touch-none"
@@ -218,12 +273,31 @@ function DetailsPage() {
               onMouseDown={handleMouseDown}
               onTouchStart={handleMouseDown}
             >
-              <img src={buildingData.image_large} alt="Zoomed View" className="max-w-none" />
+              <img
+                src={buildingData.image_large}
+                alt="Zoomed View"
+                className="max-w-none"
+              />
             </div>
             <div className="absolute bottom-4 flex space-x-4">
-              <button onClick={() => handleZoom("out")} className="px-4 py-2 bg-gray-800 text-white rounded-md">-</button>
-              <button onClick={() => handleZoom("in")} className="px-4 py-2 bg-gray-800 text-white rounded-md">+</button>
-              <button onClick={closeModal} className="px-4 py-2 bg-red-600 text-white rounded-md">Close</button>
+              <button
+                onClick={() => handleZoom("out")}
+                className="px-4 py-2 bg-gray-800 text-white rounded-md"
+              >
+                -
+              </button>
+              <button
+                onClick={() => handleZoom("in")}
+                className="px-4 py-2 bg-gray-800 text-white rounded-md"
+              >
+                +
+              </button>
+              <button
+                onClick={closeModal}
+                className="px-4 py-2 bg-red-600 text-white rounded-md"
+              >
+                Close
+              </button>
             </div>
           </div>
         </div>

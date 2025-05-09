@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useEffect} from "react";
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import HomePage from './Pages/HomePage';
 import GalleryPage from './Pages/GalleryPage';
@@ -11,9 +11,37 @@ import './index.css';
 
 function App() {
   
-  return (
+  useEffect(() => {
+    const preloadData = async () => {
+      const cacheName = "datatongerengetekend";
+      const apiUrl = "https://grondslag.be/api/tongerengetekend";
+  
+      try {
+        // Open the cache
+        const cache = await caches.open(cacheName);
+  
+        // Check if the data is already cached
+        const cachedResponse = await cache.match(apiUrl);
+        if (cachedResponse) {
+          console.log("Data already exists in the cache. No need to fetch.");
+          return; // Exit the function if data is already cached
+        }
+  
+        // Fetch the data from the network
+        const response = await fetch(apiUrl);
+        if (response.ok) {
+          // Cache the data
+          await cache.put(apiUrl, response.clone());
+          console.log("Preloaded JSON file into cache.");
+        }
+      } catch (error) {
+        console.error("Failed to preload JSON file:", error);
+      }
+    };
+    preloadData();
+}, []);
 
-    
+  return (
 
     <Router>
       <div className="min-h-screen flex flex-col">
