@@ -192,7 +192,7 @@ function DetailsPage() {
               <div className="flex items-center justify-end space-x-4 w-full">
                 <button
                   onClick={() => navigate(`/map/${buildingData.url}`)}
-                  className="px-2 py-2 bg-black text-white font-semibold rounded-md text-sm shadow-md"
+                  className="px-2 py-2 bg-black text-white font-semibold rounded-md text-sm shadow-md cursor-pointer"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -216,7 +216,7 @@ function DetailsPage() {
 
                 <button
                   onClick={openModal}
-                  className="p-2 bg-black rounded-md flex items-center justify-center text-white"
+                  className="p-2 bg-black rounded-md flex items-center justify-center text-white cursor-pointer"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -247,11 +247,8 @@ function DetailsPage() {
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-0 w-full px-4 pb-[54px] bg-black">
-        <audio
-          controls
-          className="w-full rounded-md shadow-md bg-gray-800 text-white"
-        >
+      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-[545px] px-4 pb-[54px] bg-black flex justify-center">
+        <audio controls className="w-full shadow-md bg-gray-900 text-white">
           <source src={buildingData.soundfile} type="audio/mp3" />
           Your browser does not support the audio element.
         </audio>

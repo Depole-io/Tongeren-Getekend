@@ -156,3 +156,41 @@ self.addEventListener("install", (event) => {
     })()
   );
 });
+
+// Listen for push events
+self.addEventListener("push", (event) => {
+  console.log("Push notification received:", event);
+
+  const data = event.data ? event.data.json() : {};
+  const title = data.title || "Default Title";
+  const options = {
+    body: data.body || "Default body content",
+    icon: data.icon || "/default-icon.png",
+    badge: data.badge || "/default-badge.png",
+    data: data.url || "/", // URL to open when the notification is clicked
+  };
+
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+// Handle notification click events
+self.addEventListener("notificationclick", (event) => {
+  console.log("Notification click received:", event);
+
+  event.notification.close(); // Close the notification
+
+  event.waitUntil(
+    clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
+      // If a window is already open, focus it
+      for (const client of clientList) {
+        if (client.url === event.notification.data && "focus" in client) {
+          return client.focus();
+        }
+      }
+      // Otherwise, open a new window
+      if (clients.openWindow) {
+        return clients.openWindow(event.notification.data);
+      }
+    })
+  );
+});

@@ -143,7 +143,9 @@ export default function MapPage() {
 
           // ✅ Fit map to all markers when no building is selected
           const validCoords = data
-            .filter((b) => typeof b.lat === "number" && typeof b.long === "number")
+            .filter(
+              (b) => typeof b.lat === "number" && typeof b.long === "number"
+            )
             .map((b) => [b.lat, b.long]);
 
           if (validCoords.length > 0) {
@@ -175,87 +177,93 @@ export default function MapPage() {
   }, [url]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black">
+    <div className="min-h-screen bg-black">
       {error ? (
         <div className="text-red-500">Error: {error}</div>
       ) : (
-        <MapContainer
-          center={
-            Array.isArray(focusCoordinates) && focusCoordinates.length === 2
-              ? focusCoordinates
-              : userLocation || fallbackCoordinates
-          }
-          zoom={10}
-          className="w-110 h-[800px] rounded-lg shadow-lg justify-center"
-          whenCreated={(mapInstance) => {
-            mapRef.current = mapInstance;
-          }}
-        >
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          />
-
-          <MapFocus
-            coordinates={focusCoordinates}
-            onZoomComplete={setIsZoomed}
-            reset={resetMap}
-          />
-
-          {focusCoordinates && (
-            <PulsatingMarker coordinates={focusCoordinates} isZoomed={isZoomed} />
-          )}
-
-          {userLocation && (
-            <Marker
-              position={userLocation}
-              icon={
-                new L.Icon({
-                  iconUrl: mylocation,
-                  iconRetinaUrl: mylocation,
-                  shadowUrl: markerShadow,
-                  iconSize: [39, 39],
-                  iconAnchor: [19.5, 39],
-                })
-              }
-            >
-              <Popup>You are here!</Popup>
-            </Marker>
-          )}
-
-          {buildingData.map((building) => {
-            if (
-              typeof building.lat !== "number" ||
-              typeof building.long !== "number"
-            ) {
-              return null;
+        <div className="w-full max-w-3xl mx-auto h-[80vh] rounded-lg shadow-lg overflow-hidden">
+          <MapContainer
+            center={
+              Array.isArray(focusCoordinates) && focusCoordinates.length === 2
+                ? focusCoordinates
+                : userLocation || fallbackCoordinates
             }
+            zoom={10}
+            className="w-full h-full rounded-lg shadow-lg"
+            whenCreated={(mapInstance) => {
+              mapRef.current = mapInstance;
+            }}
+            style={{ height: "100%", width: "100%" }}
+          >
+            <TileLayer
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            />
 
-            return (
+            <MapFocus
+              coordinates={focusCoordinates}
+              onZoomComplete={setIsZoomed}
+              reset={resetMap}
+            />
+
+            {focusCoordinates && (
+              <PulsatingMarker
+                coordinates={focusCoordinates}
+                isZoomed={isZoomed}
+              />
+            )}
+
+            {userLocation && (
               <Marker
-                key={building.key}
-                position={{ lat: building.lat, lng: building.long }}
-                icon={getBuildingIcon(building.exists)}
+                position={userLocation}
+                icon={
+                  new L.Icon({
+                    iconUrl: mylocation,
+                    iconRetinaUrl: mylocation,
+                    shadowUrl: markerShadow,
+                    iconSize: [39, 39],
+                    iconAnchor: [19.5, 39],
+                  })
+                }
               >
-                <Popup>
-                  <div
-                    className="text-center cursor-pointer w-40"
-                    onClick={() =>
-                      (window.location.href = `/details/${building.url}`)
-                    }
-                  >
-                    <img
-                      src={building.image_front}
-                      alt={building.name}
-                      className="w-80 h-40 mx-auto mb-2"
-                    />
-                    <h3 className="font-bold text-lg">{building.name}</h3>
-                  </div>
-                </Popup>
+                <Popup>You are here!</Popup>
               </Marker>
-            );
-          })}
-        </MapContainer>
+            )}
+
+            {buildingData.map((building) => {
+              if (
+                typeof building.lat !== "number" ||
+                typeof building.long !== "number"
+              ) {
+                return null;
+              }
+
+              return (
+                <Marker
+                  key={building.key}
+                  position={{ lat: building.lat, lng: building.long }}
+                  icon={getBuildingIcon(building.exists)}
+                >
+                  <Popup>
+                    <div
+                      className="text-center cursor-pointer w-40"
+                      onClick={() =>
+                        (window.location.href = `/details/${building.url}`)
+                      }
+                    >
+                      <img
+                        src={building.image_front}
+                        alt={building.name}
+                        className="w-80 h-40 mx-auto mb-2"
+                      />
+                      <h3 className="font-bold text-lg">{building.name}</h3>
+                    </div>
+                  </Popup>
+                </Marker>
+              );
+            })}
+          </MapContainer>
+        </div>
       )}
     </div>
   );
