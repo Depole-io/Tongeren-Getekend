@@ -177,11 +177,11 @@ export default function MapPage() {
   }, [url]);
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen  bg-black">
       {error ? (
         <div className="text-red-500">Error: {error}</div>
       ) : (
-        <div className="w-full max-w-3xl mx-auto h-[80vh] rounded-lg shadow-lg overflow-hidden">
+        <div className="w-full max-w-3xl mx-auto h-[100vh] rounded-lg shadow-lg overflow-hidden z-0 pb-[56px]">
           <MapContainer
             center={
               Array.isArray(focusCoordinates) && focusCoordinates.length === 2

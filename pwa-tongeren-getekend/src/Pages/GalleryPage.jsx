@@ -10,14 +10,13 @@ function GalleryPage() {
   }, []);
 
   // Function to truncate description
-  const truncateDescription = (text, maxLength = 125) => {
-    if (!text) return "";
-    return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
-  };
+  //const truncateDescription = (text, maxLength = 125) => {
+  //  if (!text) return "";
+  //  return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
+  //};
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-black py-8 px-4 pb-24">
-
       {/* Responsive Vertical Layout */}
       <div className="flex flex-col gap-6 w-full max-w-2xl sm:max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg">
         {buildingData.map((building) => (
@@ -37,7 +36,7 @@ function GalleryPage() {
             </div>
             <div className="p-4 flex flex-col text-center">
               <h2 className="text-2xl font-bold text-black">{building.name}</h2>
-              <p className="text-gray-700 mt-2 text-lg">{truncateDescription(building.description)}</p>
+              <p className="text-gray-700 mt-2 text-lg">{building.title}</p>
             </div>
           </div>
         ))}

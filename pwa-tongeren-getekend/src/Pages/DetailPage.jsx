@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import EamesBird from "/assets/EamesBird.svg";
+import Roofvogel from "/assets/roofvogel.svg";
 
 function DetailsPage() {
   const { url } = useParams();
@@ -55,48 +57,30 @@ function DetailsPage() {
     fetchData();
   }, [url]);
 
-  const statusIcon = (exists) => {
-    const val = String(exists).toLowerCase(); // safely convert any value to string
-
-    switch (val) {
+  function getStatusIcon(exists) {
+    switch (String(exists).toLowerCase()) {
       case "true":
         return (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth="1.5"
-            stroke="currentColor"
-            className="size-6 text-white"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"
-            />
-          </svg>
+          <img
+            src={EamesBird}
+            alt="Bestaat nog"
+            className="h-8 w-8"
+            style={{ filter: "invert(1)" }}
+          />
         );
       case "false":
         return (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth="1.5"
-            stroke="currentColor"
-            className="size-6 text-white"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="m3 3 1.664 1.664M21 21l-1.5-1.5m-5.485-1.242L12 17.25 4.5 21V8.742m.164-4.078a2.15 2.15 0 0 1 1.743-1.342 48.507 48.507 0 0 1 11.186 0c1.1.128 1.907 1.077 1.907 2.185V19.5M4.664 4.664 19.5 19.5"
-            />
-          </svg>
+          <img
+            src={Roofvogel}
+            alt="Bestaat niet meer"
+            className="h-8 w-8"
+            style={{ filter: "invert(1)" }}
+          />
         );
       default:
         return null;
     }
-  };
+  }
 
   if (!buildingData) return <div className="text-white">Loading...</div>;
 
@@ -211,7 +195,7 @@ function DetailsPage() {
                 </button>
 
                 <div className="p-2 bg-black rounded-md flex items-center justify-center text-white">
-                  {statusIcon(buildingData.exists)}
+                  {getStatusIcon(buildingData.exists)}
                 </div>
 
                 <button
@@ -242,6 +226,34 @@ function DetailsPage() {
 
             <div className="text-lg text-white leading-relaxed whitespace-pre-line">
               {buildingData.description}
+            </div>
+
+            <div className="text-lg text-white leading-relaxed whitespace-pre-line pt-10 pb-7">
+              <h3>{buildingData.architect}</h3>
+              {buildingData.architect_description}
+            </div>
+
+            <div className="bg-gray-700 rounded-lg p-4 mt-4">
+              <div className="text-lg text-white">
+                <div>
+                  <span className="font-semibold">Bouwjaar:</span>{" "}
+                  {buildingData.year_of_construction || "Onbekend"}
+                </div>
+                <div>
+                  <span className="font-semibold">Architect:</span>{" "}
+                  {buildingData.architect || "Onbekend"}
+                </div>
+                <div>
+                  <span className="font-semibold">Bestaat nog:</span>{" "}
+                  {String(buildingData.exists).toLowerCase() === "true"
+                    ? "Ja"
+                    : "Nee"}
+                </div>
+                <div>
+                  <span className="font-semibold">adress:</span>{" "}
+                  {buildingData.address || "Onbekend"}
+                </div>
+              </div>
             </div>
           </div>
         </div>
