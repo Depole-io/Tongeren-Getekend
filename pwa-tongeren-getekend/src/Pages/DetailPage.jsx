@@ -6,7 +6,6 @@ import EamesBird from "../assets/EamesBird.svg";
 import Roofvogel from "../assets/roofvogel.svg";
 
 
-
 function DetailsPage() {
   const { url } = useParams();
   const navigate = useNavigate();
@@ -225,7 +224,7 @@ function DetailsPage() {
                 default:
                   return (
                     <div className="text-lg text-white leading-relaxed whitespace-pre-line pt-10 pb-7">
-                      <h3>{buildingData.architect}</h3>
+                      <h3 className="mb-2 text-3xl">{buildingData.architect}</h3>
                       {buildingData.architect_description}
                     </div>
                   );
@@ -258,12 +257,14 @@ function DetailsPage() {
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-92 px-4 mb-26 bg-black flex justify-center">
-        <audio controls className="w-full shadow-md bg-gray-900 text-white">
-          <source src={buildingData.soundfile} type="audio/mp3" />
-          Your browser does not support the audio element.
-        </audio>
-      </div>
+      {buildingData.soundfile && buildingData.soundfile.trim() !== "" && (
+        <div id="sound-bar" className="fixed bottom-0 left-1/2 -translate-x-1/2 w-92 px-4 mb-26 bg-black flex justify-center">
+          <audio controls className="w-full shadow-md bg-gray-900 text-white">
+            <source src={buildingData.soundfile} type="audio/mp3" />
+            Your browser does not support the audio element.
+          </audio>
+        </div>
+      )}
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-150">
@@ -308,8 +309,8 @@ function DetailsPage() {
                 onClick={() => handleZoom("in")}
                 className="px-4 py-2 bg-gray-800 text-white text-4xl rounded-full p-4 border-2 border-white"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-8">
-        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607ZM10.5 7.5v6m3-3h-6" />
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607ZM10.5 7.5v6m3-3h-6" />
               </svg>
 
               </button>

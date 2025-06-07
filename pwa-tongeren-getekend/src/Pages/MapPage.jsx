@@ -189,7 +189,7 @@ export default function MapPage() {
                 : userLocation || fallbackCoordinates
             }
             zoom={10}
-            className="w-full h-full rounded-lg shadow-lg"
+            className="w-full h-full rounded-lg shadow-lg z-0"
             whenCreated={(mapInstance) => {
               mapRef.current = mapInstance;
             }}
