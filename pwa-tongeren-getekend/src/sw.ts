@@ -36,6 +36,26 @@ const imageRoute = new Route(
 
 registerRoute(imageRoute);
 
+
+const audioRoute = new Route(
+  ({ request }) => request.destination === "audio" || request.url.endsWith(".mp3"),
+  new CacheFirst({
+    cacheName: "audio-files",
+    plugins: [
+      {
+        cacheWillUpdate: async ({ response }) => {
+          if (response && response.status === 200) {
+            console.log(`Caching audio file: ${response.url}`);
+          }
+          return response;
+        },
+      },
+    ],
+  })
+);
+
+registerRoute(audioRoute);
+
 // Cache API calls
 const fetchApiRoute = new Route(
   ({ request }) => request.url === "https://grondslag.be/api/tongerengetekend",
@@ -106,7 +126,9 @@ self.addEventListener("install", (event) => {
           const data = await response.json();
           const buildingUrls = data.map((building: { url: string }) => `/details/${building.url}`);
           const imageUrls = data.map((building: { image_front: string }) => building.image_front);
-
+          const soundfileUrls = data
+            .map((building: { soundfile?: string }) => building.soundfile)
+            .filter((url: string | undefined) => !!url); // filter out undefined
           // Cache each building's navigation route
           const pagesCache = await caches.open("pages");
           await Promise.all(
@@ -139,6 +161,25 @@ self.addEventListener("install", (event) => {
                 }
               } catch (error) {
                 console.error(`Error caching image: ${url}`, error);
+              }
+            })
+          );
+
+
+          // Cache each soundfile (MP3)
+          const audioCache = await caches.open("audio-files");
+          await Promise.all(
+            soundfileUrls.map(async (url: string) => {
+              try {
+                const response = await fetch(url);
+                if (response.ok) {
+                  await audioCache.put(url, response.clone());
+                  console.log(`Cached audio file: ${url}`);
+                } else {
+                  console.warn(`Failed to fetch audio file: ${url}`);
+                }
+              } catch (error) {
+                console.error(`Error caching audio file: ${url}`, error);
               }
             })
           );

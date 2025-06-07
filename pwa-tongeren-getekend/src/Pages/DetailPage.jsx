@@ -23,16 +23,10 @@ function DetailsPage() {
       const apiUrl = "https://grondslag.be/api/tongerengetekend";
 
       try {
-        // Open the cache
         const cache = await caches.open(cacheName);
-
-        // Check if the JSON file is in the cache
         const cachedResponse = await cache.match(apiUrl);
         if (cachedResponse) {
-          // Parse the cached response as JSON
           const cachedData = await cachedResponse.json();
-
-          // Find the building data based on the URL parameter
           const foundBuilding = cachedData.find(
             (building) => building.url === url
           );
@@ -43,8 +37,6 @@ function DetailsPage() {
             console.error("Building not found in cached data.");
           }
         }
-
-        // If not in cache, fetch from the network
         const networkResponse = await fetch(apiUrl);
         if (networkResponse.ok) {
           const networkData = await networkResponse.json();
@@ -95,14 +87,12 @@ function DetailsPage() {
     if (img && container) {
       const imgBounds = img.getBoundingClientRect();
       const containerBounds = container.getBoundingClientRect();
-
-      // Calculate the zoom to fit the image within the container
       const zoomX = containerBounds.width / imgBounds.width;
       const zoomY = containerBounds.height / imgBounds.height;
       const initialZoom = Math.min(zoomX, zoomY);
 
       setZoom(initialZoom);
-      setPosition({ x: 0, y: 0 }); // Center the image
+      setPosition({ x: 0, y: 0 });
     }
 
     setIsModalOpen(true);
@@ -223,12 +213,24 @@ function DetailsPage() {
               {buildingData.description}
             </div>
 
-            <div className="text-white leading-relaxed whitespace-pre-line pt-10 pb-7">
-              <div className="text-3xl">{buildingData.architect}</div>
-              <div className="text-lg pt-2">
-              {buildingData.architect_description}
-              </div>
-            </div>
+
+            {/* Architect block only shown if architect is not "onbekend" */}
+            {(() => {
+              switch (String(buildingData.architect).toLowerCase()) {
+                case "onbekend":
+                case "":
+                case "null":
+                case "undefined":
+                  return null;
+                default:
+                  return (
+                    <div className="text-lg text-white leading-relaxed whitespace-pre-line pt-10 pb-7">
+                      <h3>{buildingData.architect}</h3>
+                      {buildingData.architect_description}
+                    </div>
+                  );
+              }
+            })()}
 
             <div className="bg-gray-700 rounded-lg p-4 mt-4">
               <div className="text-lg text-white">
@@ -285,10 +287,17 @@ function DetailsPage() {
                 className="max-w-none"
               />
             </div>
-            <div className="absolute bottom-6 flex space-x-6">
+
+            {/* Button group absolutely positioned and with high z-index */}
+            <div
+              className="absolute left-1/2 -translate-x-1/2 z-50 flex space-x-4"
+              style={{ bottom: "56px" }}
+            >
               <button
                 onClick={() => handleZoom("out")}
-                    className="bg-gray-800 text-white text-4xl rounded-full p-4 border-2 border-white"
+                className="px-4 py-2 bg-gray-800 text-white rounded-md disabled:opacity-50"
+                disabled={zoom <= 1}
+
               >
              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-8">
               <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607ZM13.5 10.5h-6" />
