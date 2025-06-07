@@ -1,7 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import EamesBird from "/assets/EamesBird.svg";
-import Roofvogel from "/assets/roofvogel.svg";
+
+import markerIcon from "../assets/marker-icon.svg";
+import EamesBird from "../assets/EamesBird.svg";
+import Roofvogel from "../assets/roofvogel.svg";
+
+
 
 function DetailsPage() {
   const { url } = useParams();
@@ -162,8 +166,8 @@ function DetailsPage() {
 
   return (
     <>
-      <div className="min-h-screen flex items-center justify-center pb-[90px] mb-[54px] sm:p-8 bg-black text-white">
-        <div className="w-full max-w-lg h-full flex flex-col text-left shadow-lg sm:rounded-xl overflow-hidden bg-gray-900 text-white">
+      <div className="min-h-screen flex items-center justify-center pb-[90px] mb-[54px] sm:p-8  text-white">
+        <div className="w-full max-w-lg h-full flex flex-col text-left shadow-lg sm:rounded-xl overflow-hidden  text-white">
           <div className="w-full flex-grow min-h-0 flex items-center justify-center border-b border-gray-700">
             <img
               src={buildingData.image_front}
@@ -178,20 +182,8 @@ function DetailsPage() {
                   onClick={() => navigate(`/map/${buildingData.url}`)}
                   className="px-2 py-2 bg-black text-white font-semibold rounded-md text-sm shadow-md cursor-pointer"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth="1.5"
-                    stroke="currentColor"
-                    className="size-6"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z"
-                    />
-                  </svg>
+                  <img src={markerIcon} alt="Marker" className="size-8 invert" />
+
                 </button>
 
                 <div className="p-2 bg-black rounded-md flex items-center justify-center text-white">
@@ -219,18 +211,23 @@ function DetailsPage() {
                 </button>
               </div>
 
-              <h1 className="text-3xl font-bold text-white text-center">
-                {buildingData.name}
-              </h1>
+
             </div>
 
-            <div className="text-lg text-white leading-relaxed whitespace-pre-line">
+
+            <div className="text-4xl font-raleway font-bold text-white leading-relaxed text-left">
+                {buildingData.name} 
+              </div>            
+
+            <div className="text-lg text-white font-raleway leading-relaxed whitespace-pre-line">
               {buildingData.description}
             </div>
 
-            <div className="text-lg text-white leading-relaxed whitespace-pre-line pt-10 pb-7">
-              <h3>{buildingData.architect}</h3>
+            <div className="text-white leading-relaxed whitespace-pre-line pt-10 pb-7">
+              <div className="text-3xl">{buildingData.architect}</div>
+              <div className="text-lg pt-2">
               {buildingData.architect_description}
+              </div>
             </div>
 
             <div className="bg-gray-700 rounded-lg p-4 mt-4">
@@ -250,7 +247,7 @@ function DetailsPage() {
                     : "Nee"}
                 </div>
                 <div>
-                  <span className="font-semibold">adress:</span>{" "}
+                  <span className="font-semibold">Adres:</span>{" "}
                   {buildingData.address || "Onbekend"}
                 </div>
               </div>
@@ -259,7 +256,7 @@ function DetailsPage() {
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-[545px] px-4 pb-[54px] bg-black flex justify-center">
+      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-92 px-4 mb-26 bg-black flex justify-center">
         <audio controls className="w-full shadow-md bg-gray-900 text-white">
           <source src={buildingData.soundfile} type="audio/mp3" />
           Your browser does not support the audio element.
@@ -267,7 +264,7 @@ function DetailsPage() {
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-150">
           <div
             ref={containerRef}
             className="relative w-full h-full flex items-center justify-center overflow-hidden"
@@ -277,7 +274,7 @@ function DetailsPage() {
               className="cursor-grab touch-none"
               style={{
                 transform: `scale(${zoom}) translate(${position.x}px, ${position.y}px)`,
-                transition: "transform 0.1s ease",
+                transition: "transform 0.2s ease",
               }}
               onMouseDown={handleMouseDown}
               onTouchStart={handleMouseDown}
@@ -288,24 +285,33 @@ function DetailsPage() {
                 className="max-w-none"
               />
             </div>
-            <div className="absolute bottom-4 flex space-x-4">
+            <div className="absolute bottom-6 flex space-x-6">
               <button
                 onClick={() => handleZoom("out")}
-                className="px-4 py-2 bg-gray-800 text-white rounded-md"
+                    className="bg-gray-800 text-white text-4xl rounded-full p-4 border-2 border-white"
               >
-                -
+             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607ZM13.5 10.5h-6" />
+            </svg>
+
               </button>
               <button
                 onClick={() => handleZoom("in")}
-                className="px-4 py-2 bg-gray-800 text-white rounded-md"
+                className="px-4 py-2 bg-gray-800 text-white text-4xl rounded-full p-4 border-2 border-white"
               >
-                +
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-8">
+        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607ZM10.5 7.5v6m3-3h-6" />
+              </svg>
+
               </button>
               <button
                 onClick={closeModal}
-                className="px-4 py-2 bg-red-600 text-white rounded-md"
+                className="px-4 py-2 bg-red-600 text-white text-4xl rounded-full p-4 border-2 border-white"
               >
-                Close
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-8">
+                <path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+        </svg>
+
               </button>
             </div>
           </div>
