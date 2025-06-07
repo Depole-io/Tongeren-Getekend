@@ -10,12 +10,12 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
-import markerIcon from "leaflet/dist/images/marker-icon.png";
-import markerShadow from "leaflet/dist/images/marker-shadow.png";
-import existingLocation from "leaflet/dist/images/existinglocation.svg";
-import lostlocation from "leaflet/dist/images/lostlocation.svg";
-import mylocation from "leaflet/dist/images/mylocation.svg";
+import markerIcon2x from "../assets/marker-icon-2x.svg";
+import markerIcon from "../assets/marker-icon.svg";
+import markerShadow from "../assets/marker-shadow.png";
+import existingLocation from "../assets/existinglocation.svg";
+import lostlocation from "../assets/lostlocation.svg";
+import mylocation from "../assets/mylocation.svg";
 
 // Fix default Leaflet marker icon
 L.Icon.Default.mergeOptions({
@@ -177,11 +177,11 @@ export default function MapPage() {
   }, [url]);
 
   return (
-    <div className="min-h-screen  bg-black">
+    <div className="min-h-screen ">
       {error ? (
         <div className="text-red-500">Error: {error}</div>
       ) : (
-        <div className="w-full max-w-3xl mx-auto h-[100vh] rounded-lg shadow-lg overflow-hidden z-0 pb-[56px]">
+        <div className="w-full max-w-3xl mx-auto h-[100vh] rounded-lg shadow-lg overflow-hidden z-0">
           <MapContainer
             center={
               Array.isArray(focusCoordinates) && focusCoordinates.length === 2

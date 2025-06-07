@@ -11,6 +11,7 @@
     "generate-pwa-assets": "pwa-assets-generator --preset minimal public/logo.svg"
   },
   "dependencies": {
+    "@fontsource/raleway": "^5.2.5",
     "@tailwindcss/vite": "^4.0.14",
     "chocolatey": "^0.0.1",
     "leaflet": "^1.9.4",
@@ -18,6 +19,7 @@
     "react-dom": "^19.0.0",
     "react-leaflet": "^5.0.0",
     "react-router-dom": "^7.4.0",
+    "swiper": "^11.2.8",
     "tailwindcss": "^4.0.14"
   },
   "devDependencies": {

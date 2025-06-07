@@ -1,15 +1,25 @@
 import React, { useEffect, useState } from "react";
 
+import EamesBird from "../assets/EamesBird.svg";
+import Roofvogel from "../assets/roofvogel.svg";
+
+
+
 function HomePage() {
   const [buildingData, setBuildingData] = useState([]);
+
+  const duration = 1700; 
+  const delay = 300; 
+  const animStr = (i) => `fadeIn ${duration}ms ease-out ${delay * i}ms forwards`;
+
 
   useEffect(() => {
     fetch("https://grondslag.be/api/tongerengetekend")
       .then((response) => response.json())
       .then((data) => {
         // Shuffle the array and select only 5 random buildings
-        const shuffledData = [...data].sort(() => Math.random() - 0.5);
-        setBuildingData(shuffledData.slice(0, 5));
+        const shuffledData = [...data];
+        setBuildingData(shuffledData.slice(0, 20));
       });
   }, []);
 
@@ -20,31 +30,50 @@ function HomePage() {
   //};
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-black py-8 px-4 pb-[54px]">
-      {/* Vertical Layout */}
-      <div className="flex flex-col gap-6 w-full max-w-2xl sm:max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg">
-        {buildingData.map((building) => (
+    <div className="min-h-screen flex flex-col items-center justify-center  py-8 px-4 pb-[54px]">
+    <div className="flex flex-row gap-6 w-full max-w-2xl sm:max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg">
+      <div className="flex flex-col">
+      <div className="text-white text-6xl font-bold [writing-mode:vertical-lr] flex flex-col">
+       Tongeren
+       </div>
+       <img src={EamesBird} alt="Eames Bird" className="my-3 w-10 h-10  border-white" style={{ filter: "invert(1)" }}  />
+       <div className="text-white text-6xl font-bold [writing-mode:vertical-lr] flex flex-col">
+        Getekend
+       </div>
+      </div>
+
+
+
+
+
+      <div id="buildings" className="flex flex-col gap-4 w-full max-w-2xl sm:max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg overflow-y-auto max-h-[80vh]">
+        {buildingData.map((building, i)  => (
           <div
-            key={building.url}
-            className="bg-white rounded-xl shadow-lg overflow-hidden w-full sm:w-[375px] lg:w-[400px] xl:w-[450px] mx-auto cursor-pointer"
+            key={i}
+            className=" w-full sm:w-[375px] lg:w-[400px] xl:w-[450px] mx-auto cursor-pointer text-transparent"
+            style={{ animation: animStr(i) }}
             onClick={() => {
               window.location.href = `/details/${building.url}`;
             }}
           >
-            <div className="w-full bg-purple-300 flex items-center justify-center overflow-hidden">
-              <img
-                src={building.image_front}
-                alt={building.name}
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="p-4 flex flex-col text-center">
-              <h2 className="text-2xl font-bold text-black">{building.name}</h2>
-              <p className="text-gray-700 mt-2 text-lg">{building.title}</p>
+
+            <div className="flex flex-col text-left text-2xl font-bold text-white">
+              {building.name}
             </div>
           </div>
         ))}
       </div>
+
+     
+
+
+
+
+
+    </div>
+
+
+
     </div>
   );
 }

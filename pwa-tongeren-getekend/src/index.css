@@ -1,10 +1,95 @@
+@import "@fontsource/raleway";
 @import "tailwindcss";
 
-@keyframes spin {
-    to {
-      transform: rotate(360deg);
+
+  * {
+    font-family: "Raleway";
+  }
+
+
+
+  body {
+    animation: rotate-bg-color 100s infinite;
+
+    background-image: radial-gradient( ellipse farthest-corner at 40px 40px , #000000, #000000 50%, transparent 50%);
+    background-size: 50px 50px;
+    background-repeat: repeat;
+
+  }
+
+
+  .leaflet-tile-pane {
+    -webkit-filter: grayscale(100%);
+    filter: grayscale(100%);
+  }
+
+
+
+
+
+
+.nav-bg {
+  animation: rotate-bg-color 100s infinite;
+}
+
+
+  
+  @keyframes rotate-bg-color {
+    0% {
+      background-color: black;
+    
+  
+    }
+    10% {
+      background-color: rgb(17, 17, 103);
+    }
+    20% {
+      background-color: black;
+    }
+    30% {
+      background-color: rgb(103, 103, 17);
+    }
+    40% {
+      background-color: black;
+    }
+    50% {
+      background-color: rgb(17, 17, 103);
+    }
+    60% {
+      background-color: black;
+    }
+    70% {
+      background-color: rgb(103, 17, 103);
+    }
+    80% {
+      background-color: black;
+    }
+    90% {
+      background-color: rgb(103, 17, 17);
+    }
+    100% {
+      background-color: black;
     }
   }
+
+  @keyframes fadeIn {
+
+    0% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.3;
+    }
+  
+    100% {
+      opacity: 1;
+    }
+  }
+
+
+
+
   
   .animate-spin {
     animation: spin 1s linear infinite;
