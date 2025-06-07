@@ -13,20 +13,9 @@ export default defineConfig({
   optimizeDeps: {
     include: ["react-leaflet", "leaflet"],
   },
-  server: {
-    https: {
-      key: fs.readFileSync(path.resolve(__dirname, "key.pem")),
-      cert: fs.readFileSync(path.resolve(__dirname, "cert.pem")),
-    },
-    host: true,
-    allowedHosts: ["*"], // allow all external hosts for dev
-  },
+
   preview: {
     host: true,
-    https: {
-      key: fs.readFileSync(path.resolve(__dirname, "key.pem")),
-      cert: fs.readFileSync(path.resolve(__dirname, "cert.pem")),
-    },
     allowedHosts: ["*"], // allow all hosts for preview too
   },
 
