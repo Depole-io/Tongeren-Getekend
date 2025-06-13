@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import EamesBird from "../assets/EamesBird.svg";
 import Roofvogel from "../assets/roofvogel.svg";
-
+import background from "../assets/background.jsx";
 
 
 function HomePage() {
@@ -41,8 +41,6 @@ function HomePage() {
         GETEKEND
        </div>
       </div>
-
-
 
       <div id="buildings" className="flex flex-col gap-4 w-full max-w-2xl sm:max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg overflow-y-auto max-h-[80vh] pb-10">
         {buildingData.map((building, i)  => (

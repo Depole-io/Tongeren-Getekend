@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="1000px" height="200px">
+  <text 
+    font-family="Raleway, Arial, Helvetica, sans-serif" 
+    x="500" 
+    y="200"
+    style="text-shadow: -0.5px 0 black, 0 1px black, 0.5px 0 black, 0 -0.5px black; fill:black; text-anchor: middle; font-weight: 600" 
+    font-size="200"
+  >
+    GETEKEND
+  </text>
+</svg> 
