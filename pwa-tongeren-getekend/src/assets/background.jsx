@@ -1,37 +1,21 @@
 const createBackground = () => {
   const fullText = 'TONGERENGETEKEND';
-  const subText = 'een getekend spoor door de stad';
   
-  const createRandomLetters = (count) => {
-    // Create array of indices for all letters
-    const indices = Array.from({ length: fullText.length }, (_, i) => i);
-    // Shuffle the indices
-    for (let i = indices.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [indices[i], indices[j]] = [indices[j], indices[i]];
-    }
-    // Take first 6 indices and sort them to maintain original order
-    const selectedIndices = indices.slice(0, count).sort((a, b) => a - b);
-    // Get the letters at those indices
-    return selectedIndices.map(i => fullText[i]).join('');
-  };
-
-  const createRandomSubText = () => {
-    // Get a random starting position that allows for 15 letters
-    const maxStart = subText.length - 18;
-    const startPos = Math.floor(Math.random() * maxStart);
-    // Get 15 consecutive letters starting from the random position
-    return subText.slice(startPos, startPos + 15);
-  };
-
-  const lines = Array.from({ length: 12 }, (_, index) => {
-    const y = 150 + (index * 150); // Back to 150 pixel spacing
-    const isSubText = index % 2 === 1; // Alternate between fullText and subText
+  // Generate unique random spacings for each line (between 50 and 400 pixels)
+  const letterSpacings = Array.from({ length: 8 }, () => Math.floor(Math.random() * 350) + 50);
+  
+  // Generate random x positions for each line (between 200 and 600 pixels)
+  const xPositions = Array.from({ length: 8 }, () => Math.floor(Math.random() * 400) + 200);
+  
+  const lines = Array.from({ length: 8 }, (_, index) => {
+    const y = 150 + (index * 150);
+    const startPos = index * 2;
+    const twoLetters = fullText.slice(startPos, startPos + 2);
     
     return `
       <text 
         font-family="Raleway, Arial, Helvetica, sans-serif" 
-        x="400" 
+        x="${xPositions[index]}" 
         y="${y}"
         style="
           fill: transparent;
@@ -40,10 +24,11 @@ const createBackground = () => {
           text-anchor: middle; 
           paint-order: stroke;
         " 
-        font-size="${isSubText ? '100' : '200'}"
-        font-weight="${isSubText ? '400' : '700'}"
+        font-size="200"
+        font-weight="700"
       >
-        ${isSubText ? createRandomSubText() : createRandomLetters(8)}
+        ${twoLetters[0]}
+        <tspan dx="${letterSpacings[index]}">${twoLetters[1]}</tspan>
       </text>
     `;
   }).join('');

@@ -30,15 +30,15 @@ function HomePage() {
   //};
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center  py-8 px-0 pb-[54px]">
+    <div className="min-h-screen flex flex-col items-center justify-center  py-6 px-0 pb-[54px]">
     <div className="flex flex-row gap-6 w-full max-w-2xl sm:max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg">
       <div className="flex flex-col pl-4">
       <div className="text-white text-6xl font-bold [writing-mode:vertical-lr] flex flex-col">
-       TONGEREN
+       Tongeren
        </div>
        <img src={EamesBird} alt="Eames Bird" className="my-3 w-10 h-10  border-white" style={{ filter: "invert(1)" }}  />
        <div className="text-white text-6xl font-bold [writing-mode:vertical-lr] flex flex-col">
-        GETEKEND
+        Getekend
        </div>
       </div>
 
