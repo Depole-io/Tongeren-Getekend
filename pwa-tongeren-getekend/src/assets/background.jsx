@@ -43,7 +43,7 @@ const createBackground = () => {
         font-size="${isSubText ? '100' : '200'}"
         font-weight="${isSubText ? '400' : '700'}"
       >
-        ${isSubText ? createRandomSubText() : createRandomLetters(6)}
+        ${isSubText ? createRandomSubText() : createRandomLetters(8)}
       </text>
     `;
   }).join('');
