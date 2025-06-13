@@ -11,7 +11,11 @@
   body {
     --bg-main-1: #2C4236;
     --bg-main-2: #4d645b;
-    background: linear-gradient(135deg, var(--bg-main-1) 50%, var(--bg-main-2) 50%) !important;
+    background:
+      linear-gradient(135deg, var(--bg-main-1) 50%, var(--bg-main-2) 50%),
+      url('/src/assets/background.svg');
+    background-size: cover, cover;
+    background-blend-mode: overlay;
     animation: rotate-bg-gradient 100s infinite;
   }
 

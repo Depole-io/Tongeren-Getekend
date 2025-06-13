@@ -20,7 +20,8 @@ const createBackground = () => {
         style="
           fill: transparent;
           stroke: black;
-          stroke-width: 3;
+          stroke-opacity: 0.5;
+          stroke-width: 2;
           text-anchor: middle; 
           paint-order: stroke;
         " 

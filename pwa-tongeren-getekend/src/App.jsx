@@ -37,22 +37,19 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const style = document.createElement('style');
-    style.textContent = `
-      body {
-        background-image: url("${background}");
-        background-repeat: repeat;
-        background-position: center;
-        background-size: contain;
-        background-blend-mode: overlay;
-      }
+    document.body.style.backgroundImage = `
+      linear-gradient(135deg, var(--bg-main-1) 50%, var(--bg-main-2) 50%),
+      url("${background}")
     `;
-    document.head.appendChild(style);
-
+    document.body.style.backgroundSize = "cover, cover";
+    document.body.style.backgroundBlendMode = "overlay";
+    // Clean up on unmount
     return () => {
-      document.head.removeChild(style);
+      document.body.style.backgroundImage = "";
+      document.body.style.backgroundSize = "";
+      document.body.style.backgroundBlendMode = "";
     };
-  }, []);
+  }, [background]);
 
   const menuItems = [
     { path: "/", icon: (
