@@ -30,23 +30,21 @@ function HomePage() {
   //};
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center  py-8 px-4 pb-[54px]">
+    <div className="min-h-screen flex flex-col items-center justify-center  py-8 px-0 pb-[54px]">
     <div className="flex flex-row gap-6 w-full max-w-2xl sm:max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg">
-      <div className="flex flex-col">
+      <div className="flex flex-col pl-4">
       <div className="text-white text-6xl font-bold [writing-mode:vertical-lr] flex flex-col">
-       Tongeren
+       TONGEREN
        </div>
        <img src={EamesBird} alt="Eames Bird" className="my-3 w-10 h-10  border-white" style={{ filter: "invert(1)" }}  />
        <div className="text-white text-6xl font-bold [writing-mode:vertical-lr] flex flex-col">
-        Getekend
+        GETEKEND
        </div>
       </div>
 
 
 
-
-
-      <div id="buildings" className="flex flex-col gap-4 w-full max-w-2xl sm:max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg overflow-y-auto max-h-[80vh]">
+      <div id="buildings" className="flex flex-col gap-4 w-full max-w-2xl sm:max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg overflow-y-auto max-h-[80vh] pb-10">
         {buildingData.map((building, i)  => (
           <div
             key={i}
@@ -56,8 +54,7 @@ function HomePage() {
               window.location.href = `/details/${building.url}`;
             }}
           >
-
-            <div className="flex flex-col text-left text-2xl font-bold text-white">
+            <div className="flex flex-col text-left text-2xl font-semibold text-white">
               {building.name}
             </div>
           </div>

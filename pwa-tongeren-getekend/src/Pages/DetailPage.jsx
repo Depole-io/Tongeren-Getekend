@@ -1,6 +1,13 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
+import {
+  AnchorContext,
+  AnchorLink,
+  AnchorProvider,
+  AnchorSection,
+} from "react-anchor-navigation";
+
 import markerIcon from "../assets/marker-icon.svg";
 import EamesBird from "../assets/EamesBird.svg";
 import Roofvogel from "../assets/roofvogel.svg";
@@ -155,6 +162,7 @@ function DetailsPage() {
 
   return (
     <>
+    <AnchorProvider>
       <div className="min-h-screen flex items-center justify-center pb-[90px] mb-[54px] sm:p-8  text-white">
         <div className="w-full max-w-lg h-full flex flex-col text-left shadow-lg sm:rounded-xl overflow-hidden  text-white">
           <div className="w-full flex-grow min-h-0 flex items-center justify-center border-b border-gray-700">
@@ -164,24 +172,37 @@ function DetailsPage() {
               className="w-full h-full object-cover"
             />
           </div>
-          <div className="flex flex-col w-full space-y-4 p-6 sm:p-8 flex-none min-h-[40%] max-h-[50%] bg-opacity-80 rounded-b-xl">
-            <div className="flex flex-col items-center space-y-4 w-full">
-              <div className="flex items-center justify-end space-x-4 w-full">
+
+          <div className="flex flex-col items-center space-y-4 w-full">
+              <div className="flex items-center justify-between space-x-4 border-b border-white w-full">
                 <button
                   onClick={() => navigate(`/map/${buildingData.url}`)}
-                  className="px-2 py-2 bg-black text-white font-semibold rounded-md text-sm shadow-md cursor-pointer"
+                  className="px-2 py-2 flex flex-row  text-white font-semibold border-r border-white  text-sm cursor-pointer w-full"
                 >
                   <img src={markerIcon} alt="Marker" className="size-8 invert" />
-
+                  <div className="ml-2 flex flex-col">
+                  <div className="text-xs text-left">{buildingData.lat} </div>
+                  <div className="text-xs text-left">{buildingData.long}</div>
+                  </div>
                 </button>
 
-                <div className="p-2 bg-black rounded-md flex items-center justify-center text-white">
+
+
+                <AnchorLink className="flex flex-row justify-start  text-white font-semibold border-r border-white  text-sm cursor-pointer w-full h-full items-center" href="#id-kit" activeClassName="blue">
+
                   {getStatusIcon(buildingData.exists)}
-                </div>
+                  <div className="">                  {String(buildingData.exists).toLowerCase() === "true"
+                    ? "Bewaard"
+                    : "Verdwenen"}</div>
+                  
+                </AnchorLink>
+
+
+
 
                 <button
                   onClick={openModal}
-                  className="p-2 bg-black rounded-md flex items-center justify-center text-white cursor-pointer"
+                  className="p-2 flex items-center justify-center text-white cursor-pointer text-sm w-full"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -197,6 +218,8 @@ function DetailsPage() {
                       d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
                     />
                   </svg>
+
+                  Inzoemen
                 </button>
               </div>
 
@@ -204,9 +227,16 @@ function DetailsPage() {
             </div>
 
 
-            <div className="text-4xl font-raleway font-bold text-white leading-relaxed text-left">
+          <div className="flex flex-col w-full space-y-4 p-6 sm:p-8 flex-none min-h-[40%] max-h-[50%] bg-opacity-80 rounded-b-xl">
+
+
+
+            <div className="text-3xl font-raleway font-bold text-white leading-relaxed text-left">
                 {buildingData.name} 
               </div>            
+              <div className="text-lg font-raleway font-bold text-white  text-left">
+                {buildingData.title} 
+              </div>     
 
             <div className="text-lg text-white font-raleway leading-relaxed whitespace-pre-line">
               {buildingData.description}
@@ -231,7 +261,9 @@ function DetailsPage() {
               }
             })()}
 
-            <div className="bg-gray-700 rounded-lg p-4 mt-4">
+<AnchorSection  id="id-kit" />
+
+            <div  className="bg-gray-700 rounded-lg p-4 mt-4">
               <div className="text-lg text-white">
                 <div>
                   <span className="font-semibold">Bouwjaar:</span>{" "}
@@ -242,10 +274,10 @@ function DetailsPage() {
                   {buildingData.architect || "Onbekend"}
                 </div>
                 <div>
-                  <span className="font-semibold">Bestaat nog:</span>{" "}
+                  <span className="font-semibold">Status:</span>{" "}
                   {String(buildingData.exists).toLowerCase() === "true"
-                    ? "Ja"
-                    : "Nee"}
+                    ? "Bewaard"
+                    : "Verdwenen"}
                 </div>
                 <div>
                   <span className="font-semibold">Adres:</span>{" "}
@@ -256,6 +288,8 @@ function DetailsPage() {
           </div>
         </div>
       </div>
+
+      </AnchorProvider>
 
       {buildingData.soundfile && buildingData.soundfile.trim() !== "" && (
         <div id="sound-bar" className="fixed bottom-0 left-1/2 -translate-x-1/2 w-92 px-4 mb-26 bg-black flex justify-center">
@@ -296,7 +330,7 @@ function DetailsPage() {
             >
               <button
                 onClick={() => handleZoom("out")}
-                className="px-4 py-2 bg-gray-800 text-white rounded-md disabled:opacity-50"
+                className="nav-bg rounded-full p-3 border-2 border-white rounded-full text-white text-4xl p-3 border-2 border-white disabled:opacity-50"
                 disabled={zoom <= 1}
 
               >
@@ -307,7 +341,7 @@ function DetailsPage() {
               </button>
               <button
                 onClick={() => handleZoom("in")}
-                className="px-4 py-2 bg-gray-800 text-white text-4xl rounded-full p-4 border-2 border-white"
+                className="nav-bg rounded-full p-3 border-2 text-white text-4xl border-white"
               >
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-8">
               <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607ZM10.5 7.5v6m3-3h-6" />
@@ -316,7 +350,7 @@ function DetailsPage() {
               </button>
               <button
                 onClick={closeModal}
-                className="px-4 py-2 bg-red-600 text-white text-4xl rounded-full p-4 border-2 border-white"
+                className="py-2 bg-red-600 text-white text-4xl rounded-full p-3 border-2 border-white"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-8">
                 <path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />

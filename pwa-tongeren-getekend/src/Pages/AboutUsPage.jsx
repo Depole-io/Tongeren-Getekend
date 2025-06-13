@@ -24,7 +24,7 @@ function AboutUsPage() {
 
       <div id="about-us" className=" overflow-hidden w-full max-w-2xl sm:max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg text-center overflow-y-auto max-h-[80vh]">
         
-        <div className="text-white text-2xl text-left">
+        <div className="text-white text-3xl  font-semibold text-left">
         Een eerbetoon aan recent architecturaal erfgoed  </div>
         <div className="text-white text-lg mt-3 text-left">
 
@@ -38,7 +38,7 @@ function AboutUsPage() {
         </div>
 
 
-    <div className="text-white text-left text-3xl mt-10">Over Grondslag</div>
+    <div className="text-white text-left text-3xl  font-semibold mt-10">Over Grondslag</div>
         <div className="text-white text-xl text-left">
         Voor een mooier Tongeren en Borgloon
         </div>
@@ -46,13 +46,8 @@ function AboutUsPage() {
 
         Grondslag is een collectief dat zich inzet voor een mooiere Tongeren en Borgloon. Steden waar het fijn is om te leven, leren, werken en rond te hangen. We dromen van een Tongeren en Borgloon met veel kwalitatieve publieke ruimte en een stad waar op een fijne manier wordt omgegaan met ons erfgoed.
 </div>
-        <div className="text-white text-2xl mt-3 text-left">
 
-
-        Waar wij ons voor inzetten
-
-        </div>
-        <div className="text-white mt-2 text-lg text-left">
+        <div className="text-white mt-3 text-xl  font-bold text-left">
 Publieke Ruimte en het straatbeeld
 </div>
 <div className="text-white text-lg text-left">
@@ -66,25 +61,25 @@ Tongeren kent veel klein bouwkundig erfgoed zoals kapellen, kruisen, graftekens 
 Met Grondslag tonen we het recente erfgoed.
 </div>
 
-<div className="text-white mt-3 text-2xl text-left">
+<div className="text-white mt-3 text-2xl font-semibold text-left">
 We Informeren
 </div>
         <div className="text-white text-lg text-left">
 We informeren de bewoners en bezoekers over de troeven en uitdagingen van onze steden.
 </div>
-<div className="text-white mt-3 text-2xl text-left">
+<div className="text-white mt-3 text-2xl  font-semibold text-left">
 We Sensibiliseren
 </div>
 <div className="text-white text-lg text-left">
 We sensibiliseren de bewoners van Tongeren en Borgloon voor de cultureel-historische waarde van ons onroerend erfgoed. We moedigen iedereen aan om hier een actieve rol in te nemen en ondersteunen hen waar kan.
 </div>
-<div className="text-white mt-3 text-2xl text-left">
+<div className="text-white mt-3 text-2xl  font-semibold text-left">
 We Connecteren
 </div>
 <div className="text-white text-lg text-left">
 We connecteren met organisaties en dwarse denkers die onze dromen delen.
 </div>
-<div className="text-white mt-3 text-2xl text-left">
+<div className="text-white mt-3 text-2xl  font-semibold text-left">
 We trekken en duwen
 </div>
 <div className="text-white text-lg text-left">
@@ -100,9 +95,17 @@ We moedigen lokale beleidsmakers aan om zich meer in te zetten voor een kwalitat
         <img src={LogoGrondslag} alt="Eames Bird" className="my-3 w-36  border-white" style={{ filter: "invert(1)" }}  />
 
 
+<div className="text-white text-left text-3xl font-semibold mt-10">Over MoMeNTfestival </div>
+<div className="text-white text-lg mt-2 text-left">MoMeNT is sinds 2017 hét jaarlijks eigenzinnig en innovatief stadsfestival in Tongeren-Borgloon met TIJD als verbindende factor, geënt op het DNA van onze stad. Het festival is al acht jaar een vaste baken in het Vlaamse kunstenlandschap en daarbuiten, ingebed in het decor van de eerste Stad.
+<br /><br />
+MoMeNTfestival presenteert veertien dagen lang podiumkunsten in een eigenzinnige combinatie van theater, muziek, beeldende kunsten, film en andere disciplines.
+
+</div>
 
 
-        <img src={LogoMoment} alt="Eames Bird" className="my-3 w-40  border-white" style={{ filter: "invert(1)" }}  />
+
+
+        <img src={LogoMoment} alt="Eames Bird" className="my-3 w-44  border-white" style={{ filter: "invert(1)" }}  />
 
 
 
