@@ -9,7 +9,10 @@
   }
 
   body {
-    animation: rotate-bg-color 100s infinite;
+    --bg-main-1: #2C4236;
+    --bg-main-2: #4d645b;
+    background: linear-gradient(135deg, var(--bg-main-1) 50%, var(--bg-main-2) 50%) !important;
+    animation: rotate-bg-gradient 100s infinite;
   }
 
   .leaflet-tile-pane {
@@ -21,40 +24,15 @@
   animation: rotate-bg-color 100s infinite;
 }
 
-@keyframes rotate-bg-color {
-  0% {
-    background-color: black;
-  }
-  10% {
-    background-color: rgb(203, 115, 0);
-  }
-  20% {
-    background-color: black;
-  }
-  30% {
-    background-color: rgb(103, 103, 17);
-  }
-  40% {
-    background-color: black;
-  }
-  50% {
-    background-color: rgb(17, 17, 103);
-  }
-  60% {
-    background-color: black;
-  }
-  70% {
-    background-color: rgb(103, 17, 103);
-  }
-  80% {
-    background-color: black;
-  }
-  90% {
-    background-color: rgb(203, 115, 0);
-  }
-  100% {
-    background-color: black;
-  }
+@keyframes rotate-bg-gradient {
+  0%   { --bg-main-1: #2C4236; --bg-main-2: #4d645b; }
+  14%  { --bg-main-1: #4d645b; --bg-main-2: #997a7a; }
+  28%  { --bg-main-1: #997a7a; --bg-main-2: #b98201; }
+  42%  { --bg-main-1: #b98201; --bg-main-2: #c05444; }
+  57%  { --bg-main-1: #c05444; --bg-main-2: #5B3A5D; }
+  71%  { --bg-main-1: #5B3A5D; --bg-main-2: #366c7a; }
+  85%  { --bg-main-1: #366c7a; --bg-main-2: #2C4236; }
+  100% { --bg-main-1: #2C4236; --bg-main-2: #4d645b; }
 }
 
 @keyframes fadeIn {
@@ -127,4 +105,72 @@
 .rounded-full {
   border-radius: 9999px;
 }
+
+.artnouveau-btn {
+  border-radius: 50%;
+  border: 2px solid #C9B037;
+  background: #f8f5f0;
+  box-shadow: 0 2px 12px 0 rgba(201, 176, 55, 0.15);
+  transition: 
+    box-shadow 0.4s cubic-bezier(.77,0,.18,1),
+    border-color 0.4s cubic-bezier(.77,0,.18,1),
+    background 0.4s cubic-bezier(.77,0,.18,1),
+    transform 0.4s cubic-bezier(.77,0,.18,1);
+}
+.artnouveau-btn:hover {
+  box-shadow: 0 0 24px 0 #C9B037, 0 2px 12px 0 rgba(201, 176, 55, 0.15);
+  border-color: #bfa14a;
+  background: #fffbe8;
+  transform: scale(1.08) rotate(-2deg);
+}
+
+.bg-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: rgba(0,0,0,0.5);
+  pointer-events: none;
+}
+
+.text-readable {
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.7);
+}
+
+.menu-btn-1 {
+  background: linear-gradient(135deg, #2C4236 50%, #4d645b 50%);
+}
+.menu-btn-2 {
+  background: linear-gradient(135deg, #4d645b 50%, #997a7a 50%);
+}
+.menu-btn-3 {
+  background: linear-gradient(135deg, #997a7a 50%, #b98201 50%);
+}
+.menu-btn-4 {
+  background: linear-gradient(135deg, #b98201 50%, #c05444 50%);
+}
+
+.menu-btn-main {
+  background: linear-gradient(135deg, var(--bg-main-1) 50%, var(--bg-main-2) 50%);
+  transition: background 0.5s;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

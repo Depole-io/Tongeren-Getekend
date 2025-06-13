@@ -273,7 +273,7 @@ function DetailsPage() {
 
 <AnchorSection  id="id-kit" />
 
-            <div  className="bg-gray-700 bg-opacity-60 rounded-lg p-4 mt-4">
+            <div  className="border-2 border-white rounded-lg p-4 mt-4">
               <div className="text-lg text-white">
                 <div>
                   <span className="font-semibold">Bouwjaar:</span>{" "}
