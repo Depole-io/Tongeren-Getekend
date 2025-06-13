@@ -17,6 +17,7 @@ function DetailsPage() {
   const { url } = useParams();
   const navigate = useNavigate();
   const [buildingData, setBuildingData] = useState(null);
+  const [buildingIndex, setBuildingIndex] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [zoom, setZoom] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -33,11 +34,12 @@ function DetailsPage() {
         const cachedResponse = await cache.match(apiUrl);
         if (cachedResponse) {
           const cachedData = await cachedResponse.json();
-          const foundBuilding = cachedData.find(
+          const foundIndex = cachedData.findIndex(
             (building) => building.url === url
           );
-          if (foundBuilding) {
-            setBuildingData(foundBuilding);
+          if (foundIndex !== -1) {
+            setBuildingData(cachedData[foundIndex]);
+            setBuildingIndex(foundIndex + 1);
             return;
           } else {
             console.error("Building not found in cached data.");
@@ -46,10 +48,13 @@ function DetailsPage() {
         const networkResponse = await fetch(apiUrl);
         if (networkResponse.ok) {
           const networkData = await networkResponse.json();
-          const foundBuilding = networkData.find(
+          const foundIndex = networkData.findIndex(
             (building) => building.url === url
           );
-          setBuildingData(foundBuilding);
+          if (foundIndex !== -1) {
+            setBuildingData(networkData[foundIndex]);
+            setBuildingIndex(foundIndex + 1);
+          }
         }
       } catch (error) {
         console.error("Error fetching building data:", error);
@@ -83,6 +88,18 @@ function DetailsPage() {
         return null;
     }
   }
+
+  const createNumberedMarkerIcon = (number) => {
+    const svgString = `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+        <path fill-rule="evenodd" d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742Z" clip-rule="evenodd" />
+        <text x="12" y="14" text-anchor="middle" fill="white" font-size="8" font-family="Raleway, Arial, Helvetica, sans-serif" font-weight="bold">${number}</text>
+      </svg>
+    `;
+    
+    const blob = new Blob([svgString], { type: 'image/svg+xml' });
+    return URL.createObjectURL(blob);
+  };
 
   if (!buildingData) return <div className="text-white">Loading...</div>;
 
@@ -164,7 +181,7 @@ function DetailsPage() {
     <>
     <AnchorProvider>
       <div className="min-h-screen flex items-center justify-center pb-[90px] mb-[54px] sm:p-8  text-white">
-        <div className="w-full max-w-lg h-full flex flex-col text-left shadow-lg sm:rounded-xl overflow-hidden  text-white">
+        <div className="w-full max-w-lg h-full flex flex-col text-left sm:rounded-xl overflow-hidden  text-white">
           <div className="w-full flex-grow min-h-0 flex items-center justify-center border-b border-gray-700">
             <img
               src={buildingData.image_front}
@@ -179,16 +196,18 @@ function DetailsPage() {
                   onClick={() => navigate(`/map/${buildingData.url}`)}
                   className="px-2 py-2 flex flex-row  text-white font-semibold border-r border-white  text-sm cursor-pointer w-full"
                 >
-                  <img src={markerIcon} alt="Marker" className="size-8 invert" />
+                  <img 
+                    src={buildingIndex ? createNumberedMarkerIcon(buildingIndex) : markerIcon} 
+                    alt="Marker" 
+                    className="size-8 invert" 
+                  />
                   <div className="ml-2 flex flex-col">
                   <div className="text-xs text-left">{buildingData.lat} </div>
                   <div className="text-xs text-left">{buildingData.long}</div>
                   </div>
                 </button>
 
-
-
-                <AnchorLink className="flex flex-row justify-start  text-white font-semibold border-r border-white  text-sm cursor-pointer w-full h-full items-center" href="#id-kit" activeClassName="blue">
+                <AnchorLink className="flex flex-row justify-start  text-white font-semibold  text-sm cursor-pointer w-full h-full items-center" href="#id-kit" activeClassName="blue">
 
                   {getStatusIcon(buildingData.exists)}
                   <div className="">                  {String(buildingData.exists).toLowerCase() === "true"
@@ -197,12 +216,9 @@ function DetailsPage() {
                   
                 </AnchorLink>
 
-
-
-
                 <button
                   onClick={openModal}
-                  className="p-2 flex items-center justify-center text-white cursor-pointer text-sm w-full"
+                  className="p-2 flex items-center justify-center text-white cursor-pointer border-l border-white  text-sm w-full"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -219,18 +235,13 @@ function DetailsPage() {
                     />
                   </svg>
 
-                  Inzoemen
+                  Inzoomen
                 </button>
               </div>
 
 
             </div>
-
-
           <div className="flex flex-col w-full space-y-4 p-6 sm:p-8 flex-none min-h-[40%] max-h-[50%] bg-opacity-80 rounded-b-xl">
-
-
-
             <div className="text-3xl font-raleway font-bold text-white leading-relaxed text-left">
                 {buildingData.name} 
               </div>            
@@ -241,7 +252,6 @@ function DetailsPage() {
             <div className="text-lg text-white font-raleway leading-relaxed whitespace-pre-line">
               {buildingData.description}
             </div>
-
 
             {/* Architect block only shown if architect is not "onbekend" */}
             {(() => {

@@ -40,7 +40,6 @@ function App() {
   }, []);
 
   useEffect(() => {
-    console.log('Background SVG:', background); // Debug log
     
     // Create a style element
     const style = document.createElement('style');

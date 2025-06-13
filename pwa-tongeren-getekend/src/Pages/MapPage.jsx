@@ -12,39 +12,46 @@ import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import markerIcon2x from "../assets/marker-icon-2x.svg";
 import markerIcon from "../assets/marker-icon.svg";
-import markerShadow from "../assets/marker-shadow.png";
-import existingLocation from "../assets/existinglocation.svg";
-import lostlocation from "../assets/lostlocation.svg";
 import mylocation from "../assets/mylocation.svg";
 
 // Fix default Leaflet marker icon
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: markerIcon2x,
   iconUrl: markerIcon,
-  shadowUrl: markerShadow,
   iconSize: [39, 39],
   iconAnchor: [19.5, 39],
 });
 
-const getBuildingIcon = (exists) => {
-  let iconUrl;
-  if (exists === true || exists === "true") {
-    iconUrl = existingLocation;
-  } else if (exists === false || exists === "false") {
-    iconUrl = lostlocation;
-  } else if (exists === "found") {
-    iconUrl = mylocation;
-  } else {
-    iconUrl = markerIcon;
-  }
-
+const createNumberedMarkerIcon = (number) => {
+  const svgString = `
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+      <path fill-rule="evenodd" d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742Z" clip-rule="evenodd" />
+      <text x="12" y="14" text-anchor="middle" fill="white" font-size="8" font-weight="bold" font-family="Raleway, Arial, Helvetica, sans-serif">${number}</text>
+    </svg>
+  `;
+  
+  const blob = new Blob([svgString], { type: 'image/svg+xml' });
+  const url = URL.createObjectURL(blob);
+  
   return new L.Icon({
-    iconUrl,
-    iconRetinaUrl: iconUrl,
-    shadowUrl: markerShadow,
+    iconUrl: url,
+    iconRetinaUrl: url,
     iconSize: [39, 39],
     iconAnchor: [19.5, 39],
   });
+};
+
+const getBuildingIcon = (exists, number) => {
+  if (exists === "found") {
+    return new L.Icon({
+      iconUrl: mylocation,
+      iconRetinaUrl: mylocation,
+      iconSize: [39, 39],
+      iconAnchor: [19.5, 39],
+    });
+  }
+  
+  return createNumberedMarkerIcon(number);
 };
 
 const MapFocus = ({ coordinates, onZoomComplete, reset }) => {
@@ -95,8 +102,7 @@ const PulsatingMarker = ({ coordinates, isZoomed }) => {
       radius={radius}
       fillColor="red"
       color="white"
-      weight={2}
-      opacity={0.8}
+      weight={0.5}
       fillOpacity={0.5}
     />
   );
@@ -181,7 +187,7 @@ export default function MapPage() {
       {error ? (
         <div className="text-red-500">Error: {error}</div>
       ) : (
-        <div className="w-full max-w-3xl mx-auto h-[100vh] rounded-lg shadow-lg overflow-hidden z-0">
+        <div className="w-full max-w-3xl mx-auto h-[100vh] overflow-hidden z-0">
           <MapContainer
             center={
               Array.isArray(focusCoordinates) && focusCoordinates.length === 2
@@ -189,7 +195,7 @@ export default function MapPage() {
                 : userLocation || fallbackCoordinates
             }
             zoom={10}
-            className="w-full h-full rounded-lg shadow-lg z-0"
+            className="w-full h-full z-0"
             whenCreated={(mapInstance) => {
               mapRef.current = mapInstance;
             }}
@@ -220,17 +226,16 @@ export default function MapPage() {
                   new L.Icon({
                     iconUrl: mylocation,
                     iconRetinaUrl: mylocation,
-                    shadowUrl: markerShadow,
                     iconSize: [39, 39],
                     iconAnchor: [19.5, 39],
                   })
                 }
               >
-                <Popup>You are here!</Popup>
+                <Popup>Jij bent hier!</Popup>
               </Marker>
             )}
 
-            {buildingData.map((building) => {
+            {buildingData.map((building, index) => {
               if (
                 typeof building.lat !== "number" ||
                 typeof building.long !== "number"
@@ -242,7 +247,7 @@ export default function MapPage() {
                 <Marker
                   key={building.key}
                   position={{ lat: building.lat, lng: building.long }}
-                  icon={getBuildingIcon(building.exists)}
+                  icon={getBuildingIcon(building.exists, index + 1)}
                 >
                   <Popup>
                     <div
