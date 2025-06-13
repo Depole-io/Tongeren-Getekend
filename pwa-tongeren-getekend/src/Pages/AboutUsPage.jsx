@@ -40,11 +40,11 @@ function AboutUsPage() {
 
     <div className="text-white text-left text-3xl  font-semibold mt-10">Over Grondslag</div>
         <div className="text-white text-xl text-left">
-        Voor een mooier Tongeren en Borgloon
+        Voor een mooier Tongeren-Borgloon
         </div>
         <div className="text-white text-lg mt-2 text-left">
 
-        Grondslag is een collectief dat zich inzet voor een mooiere Tongeren en Borgloon. Steden waar het fijn is om te leven, leren, werken en rond te hangen. We dromen van een Tongeren en Borgloon met veel kwalitatieve publieke ruimte en een stad waar op een fijne manier wordt omgegaan met ons erfgoed.
+        Grondslag is een collectief dat zich inzet voor een mooiere Tongeren-Borgloon. Een stad waar het fijn is om te leven, leren, werken en rond te hangen. We dromen van een Tongeren-Borgloon met veel kwalitatieve publieke ruimte en een stad waar op een fijne manier wordt omgegaan met ons erfgoed.
 </div>
 
         <div className="text-white mt-3 text-xl  font-bold text-left">
@@ -56,7 +56,7 @@ De laatste 150 jaar is de aanblik van onze stad grondig veranderd. Jammer genoeg
 </div>
         <div className="text-white mt-3 text-lg text-left">
 Erfgoed gaat verder dan de middeleeuwen<br />
-Tongeren en Borgloon zijn erfgoedsteden. Maar dat omvat meer dan het Romeinse en middeleeuwse verleden.
+Tongeren-Borgloon is een  erfgoedstad. Maar dat omvat meer dan het Romeinse en middeleeuwse verleden.
 Tongeren kent veel klein bouwkundig erfgoed zoals kapellen, kruisen, graftekens en straatmeubilair, maar ook grote bouwwerken zoals kerken, industriële panden, molens, hoeven, woonhuizen, kastelen en kloosters.
 Met Grondslag tonen we het recente erfgoed.
 </div>
@@ -71,7 +71,7 @@ We informeren de bewoners en bezoekers over de troeven en uitdagingen van onze s
 We Sensibiliseren
 </div>
 <div className="text-white text-lg text-left">
-We sensibiliseren de bewoners van Tongeren en Borgloon voor de cultureel-historische waarde van ons onroerend erfgoed. We moedigen iedereen aan om hier een actieve rol in te nemen en ondersteunen hen waar kan.
+We sensibiliseren de bewoners van Tongeren-Borgloon voor de cultureel-historische waarde van ons onroerend erfgoed. We moedigen iedereen aan om hier een actieve rol in te nemen en ondersteunen hen waar kan.
 </div>
 <div className="text-white mt-3 text-2xl  font-semibold text-left">
 We Connecteren
