@@ -40,6 +40,7 @@ export default defineConfig({
     VitePWA({
       devOptions: {
         enabled: true,
+        type: 'module'
       },
       strategies: "injectManifest",
       srcDir: "src",
@@ -47,6 +48,11 @@ export default defineConfig({
       registerType: "autoUpdate",
       injectManifest: {
         swDest: "dist/sw.js",
+        injectionPoint: 'self.__WB_MANIFEST',
+        additionalManifestEntries: [
+          { url: '/', revision: '1' },
+          { url: '/index.html', revision: '1' }
+        ]
       },
       includeAssets: ["favicon.ico", "apple-touch-icon.png", "mask-icon.svg"],
       manifest: {

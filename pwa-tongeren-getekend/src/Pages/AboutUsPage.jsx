@@ -22,7 +22,7 @@ function AboutUsPage() {
       </div>
 
 
-      <div id="about-us" className=" overflow-hidden w-full max-w-2xl sm:max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg text-center overflow-y-auto max-h-[80vh]">
+      <div id="about-us" className=" overflow-hidden w-full max-w-2xl sm:max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg text-center overflow-y-auto max-h-[90vh]">
         
         <div className="text-white text-3xl  font-semibold text-left">
         Een eerbetoon aan recent architecturaal erfgoed  </div>

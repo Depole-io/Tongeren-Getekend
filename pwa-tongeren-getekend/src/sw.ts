@@ -1,20 +1,50 @@
+/// <reference lib="webworker" />
 import { cleanupOutdatedCaches, precacheAndRoute } from "workbox-precaching";
 import { NavigationRoute, Route, registerRoute } from "workbox-routing";
 import { NetworkFirst, CacheFirst } from "workbox-strategies";
 
-declare let self: ServiceWorkerGlobalScope;
+// Extend ServiceWorkerGlobalScope to include the properties we need
+interface ExtendedServiceWorkerGlobalScope extends ServiceWorkerGlobalScope {
+  __WB_MANIFEST: Array<{ url: string; revision: string }>;
+  clients: Clients;
+  skipWaiting(): Promise<void>;
+  addEventListener(type: string, listener: EventListener): void;
+  registration: ServiceWorkerRegistration;
+}
+
+// Add global declarations for clients
+declare const clients: Clients;
+
+// Add type declarations for events
+interface ExtendableEvent extends Event {
+  waitUntil(promise: Promise<any>): void;
+}
+
+interface PushEvent extends ExtendableEvent {
+  data: PushMessageData;
+}
+
+interface NotificationEvent extends ExtendableEvent {
+  notification: Notification;
+}
+
+declare let self: ExtendedServiceWorkerGlobalScope;
 
 // Clean up outdated caches
 cleanupOutdatedCaches();
 
 // Pre-cache all assets listed in the Workbox manifest
-precacheAndRoute(self.__WB_MANIFEST);
+if (Array.isArray(self.__WB_MANIFEST)) {
+  precacheAndRoute(self.__WB_MANIFEST);
+} else {
+  console.warn('Service Worker manifest is not an array:', self.__WB_MANIFEST);
+}
 
 // Force the Service Worker to take control immediately
 self.skipWaiting();
-self.addEventListener("activate", (event) => {
-  event.waitUntil(self.clients.claim());
-});
+self.addEventListener("activate", ((event: Event) => {
+  (event as ExtendableEvent).waitUntil(self.clients.claim());
+}) as EventListener);
 
 // Cache images
 const imageRoute = new Route(
@@ -68,15 +98,24 @@ const fetchApiRoute = new Route(
             const clonedResponse = response.clone();
             const data = await clonedResponse.json();
 
-            // Send the data to the main thread
-            self.clients.matchAll().then((clients) => {
-              clients.forEach((client) => {
-                client.postMessage({
-                  type: "CACHE_JSON",
-                  data: data,
-                });
-              });
-            });
+            // Send the data to the main thread with proper error handling
+            try {
+              const clients = await self.clients.matchAll();
+              await Promise.all(
+                clients.map(async (client) => {
+                  try {
+                    await client.postMessage({
+                      type: "CACHE_JSON",
+                      data: data,
+                    });
+                  } catch (error) {
+                    console.error("Error sending message to client:", error);
+                  }
+                })
+              );
+            } catch (error) {
+              console.error("Error getting clients:", error);
+            }
           }
           return response;
         },
@@ -100,20 +139,29 @@ const navigationRoute = new NavigationRoute(
 registerRoute(navigationRoute);
 
 // Preload the JSON file and dynamically cache building links
-self.addEventListener("install", (event) => {
+self.addEventListener("install", ((event: Event) => {
   self.skipWaiting();
-  event.waitUntil(
+  (event as ExtendableEvent).waitUntil(
     (async () => {
       const cacheName = "datatongerengetekend";
       const apiUrl = "https://grondslag.be/api/tongerengetekend";
 
       try {
-        // Notify the main thread that preloading has started
-        self.clients.matchAll().then((clients) => {
-          clients.forEach((client) => {
-            client.postMessage({ type: "PRELOADING_START" });
-          });
-        });
+        // Notify the main thread that preloading has started with proper error handling
+        try {
+          const clients = await self.clients.matchAll();
+          await Promise.all(
+            clients.map(async (client) => {
+              try {
+                await client.postMessage({ type: "PRELOADING_START" });
+              } catch (error) {
+                console.error("Error sending PRELOADING_START message:", error);
+              }
+            })
+          );
+        } catch (error) {
+          console.error("Error getting clients for PRELOADING_START:", error);
+        }
 
         const cache = await caches.open(cacheName);
         const response = await fetch(apiUrl);
@@ -128,7 +176,8 @@ self.addEventListener("install", (event) => {
           const imageUrls = data.map((building: { image_front: string }) => building.image_front);
           const soundfileUrls = data
             .map((building: { soundfile?: string }) => building.soundfile)
-            .filter((url: string | undefined) => !!url); // filter out undefined
+            .filter((url: string | undefined) => !!url);
+
           // Cache each building's navigation route
           const pagesCache = await caches.open("pages");
           await Promise.all(
@@ -165,7 +214,6 @@ self.addEventListener("install", (event) => {
             })
           );
 
-
           // Cache each soundfile (MP3)
           const audioCache = await caches.open("audio-files");
           await Promise.all(
@@ -185,24 +233,34 @@ self.addEventListener("install", (event) => {
           );
         }
 
-        // Notify the main thread that preloading has ended
-        self.clients.matchAll().then((clients) => {
-          clients.forEach((client) => {
-            client.postMessage({ type: "PRELOADING_END" });
-          });
-        });
+        // Notify the main thread that preloading has ended with proper error handling
+        try {
+          const clients = await self.clients.matchAll();
+          await Promise.all(
+            clients.map(async (client) => {
+              try {
+                await client.postMessage({ type: "PRELOADING_END" });
+              } catch (error) {
+                console.error("Error sending PRELOADING_END message:", error);
+              }
+            })
+          );
+        } catch (error) {
+          console.error("Error getting clients for PRELOADING_END:", error);
+        }
       } catch (error) {
         console.error("Failed to preload JSON file or navigation links:", error);
       }
     })()
   );
-});
+}) as EventListener);
 
 // Listen for push events
-self.addEventListener("push", (event) => {
-  console.log("Push notification received:", event);
+self.addEventListener("push", ((event: Event) => {
+  const pushEvent = event as PushEvent;
+  console.log("Push notification received:", pushEvent);
 
-  const data = event.data ? event.data.json() : {};
+  const data = pushEvent.data ? pushEvent.data.json() : {};
   const title = data.title || "Default Title";
   const options = {
     body: data.body || "Default body content",
@@ -211,27 +269,28 @@ self.addEventListener("push", (event) => {
     data: data.url || "/", // URL to open when the notification is clicked
   };
 
-  event.waitUntil(self.registration.showNotification(title, options));
-});
+  pushEvent.waitUntil(self.registration.showNotification(title, options));
+}) as EventListener);
 
 // Handle notification click events
-self.addEventListener("notificationclick", (event) => {
-  console.log("Notification click received:", event);
+self.addEventListener("notificationclick", ((event: Event) => {
+  const notificationEvent = event as NotificationEvent;
+  console.log("Notification click received:", notificationEvent);
 
-  event.notification.close(); // Close the notification
+  notificationEvent.notification.close(); // Close the notification
 
-  event.waitUntil(
+  notificationEvent.waitUntil(
     clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
       // If a window is already open, focus it
       for (const client of clientList) {
-        if (client.url === event.notification.data && "focus" in client) {
+        if (client.url === notificationEvent.notification.data && "focus" in client) {
           return client.focus();
         }
       }
       // Otherwise, open a new window
       if (clients.openWindow) {
-        return clients.openWindow(event.notification.data);
+        return clients.openWindow(notificationEvent.notification.data);
       }
     })
   );
-});
+}) as EventListener);
