@@ -2,6 +2,7 @@
 import { cleanupOutdatedCaches, precacheAndRoute } from "workbox-precaching";
 import { NavigationRoute, Route, registerRoute } from "workbox-routing";
 import { NetworkFirst, CacheFirst } from "workbox-strategies";
+import { ExpirationPlugin } from "workbox-expiration";
 
 // Extend ServiceWorkerGlobalScope to include the properties we need
 interface ExtendedServiceWorkerGlobalScope extends ServiceWorkerGlobalScope {
@@ -48,6 +49,10 @@ const imageRoute = new Route(
   new CacheFirst({
     cacheName: "images",
     plugins: [
+      new ExpirationPlugin({
+        maxAgeSeconds: 2 * 60 * 60, // 2 hours
+        maxEntries: 100, // Maximum number of entries to keep
+      }),
       {
         cacheWillUpdate: async ({ response }) => {
           if (response && response.status === 200) {
@@ -67,6 +72,10 @@ const audioRoute = new Route(
   new CacheFirst({
     cacheName: "audio-files",
     plugins: [
+      new ExpirationPlugin({
+        maxAgeSeconds: 2 * 60 * 60, // 2 hours
+        maxEntries: 50, // Maximum number of entries to keep
+      }),
       {
         cacheWillUpdate: async ({ response }) => {
           if (response && response.status === 200) {
@@ -87,6 +96,10 @@ const fetchApiRoute = new Route(
   new NetworkFirst({
     cacheName: "datatongerengetekend",
     plugins: [
+      new ExpirationPlugin({
+        maxAgeSeconds: 2 * 60 * 60, // 2 hours
+        maxEntries: 1, // Only one API response needed
+      }),
       {
         cacheWillUpdate: async ({ response }) => {
           if (response && response.status === 200) {
@@ -125,6 +138,12 @@ registerRoute(fetchApiRoute);
 const navigationRoute = new NavigationRoute(
   new NetworkFirst({
     cacheName: "pages",
+    plugins: [
+      new ExpirationPlugin({
+        maxAgeSeconds: 2 * 60 * 60, // 2 hours
+        maxEntries: 50, // Maximum number of pages to keep
+      }),
+    ],
   }),
   {
     allowlist: [/^\/$/, /^\/details\/.+/, /^\/map/, /^\/about/, /^\/gallery/],
