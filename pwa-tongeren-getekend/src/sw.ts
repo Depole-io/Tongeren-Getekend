@@ -34,11 +34,7 @@ declare let self: ExtendedServiceWorkerGlobalScope;
 cleanupOutdatedCaches();
 
 // Pre-cache all assets listed in the Workbox manifest
-if (Array.isArray(self.__WB_MANIFEST)) {
-  precacheAndRoute(self.__WB_MANIFEST);
-} else {
-  console.warn('Service Worker manifest is not an array:', self.__WB_MANIFEST);
-}
+precacheAndRoute(self.__WB_MANIFEST);
 
 // Force the Service Worker to take control immediately
 self.skipWaiting();
@@ -65,7 +61,6 @@ const imageRoute = new Route(
 );
 
 registerRoute(imageRoute);
-
 
 const audioRoute = new Route(
   ({ request }) => request.destination === "audio" || request.url.endsWith(".mp3"),
