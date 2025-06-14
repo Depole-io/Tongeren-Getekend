@@ -180,7 +180,7 @@ function DetailsPage() {
   return (
     <>
     <AnchorProvider>
-      <div className="min-h-screen flex items-center justify-center pb-[90px] mb-[54px] sm:p-8  text-white">
+      <div className="min-h-screen flex items-center justify-center pb-[90px] mb-[54px] sm:p-4  text-white">
         <div className="w-full max-w-lg h-full flex flex-col text-left sm:rounded-xl overflow-hidden  text-white">
           <div className="w-full flex-grow min-h-0 flex items-center justify-center border-b border-gray-700">
             <img
@@ -264,7 +264,7 @@ function DetailsPage() {
                 default:
                   return (
                     <div className="text-lg text-white leading-relaxed whitespace-pre-line pt-10 pb-7">
-                      <h3 className="mb-2 text-3xl">{buildingData.architect}</h3>
+                      <h3 className="mb-2 text-2xl font-raleway font-bold">{buildingData.architect}</h3>
                       {buildingData.architect_description}
                     </div>
                   );
