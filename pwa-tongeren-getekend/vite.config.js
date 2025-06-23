@@ -2,7 +2,6 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { VitePWA } from "vite-plugin-pwa";
-import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -60,9 +59,11 @@ export default defineConfig({
         short_name: "Tongeren Getekend",
         theme_color: "#ffffff",
         background_color: "#ffffff",
-        starturl: "/",
+        start_url: "/",
         display: "standalone",
         orientation: "portrait",
+        scope: "/",
+        lang: "en",
         icons: [
           {
             src: "pwa-64x64.png",
