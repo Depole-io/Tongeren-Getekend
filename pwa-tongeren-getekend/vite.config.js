@@ -89,5 +89,17 @@ export default defineConfig({
         ],
       },
     }),
+    // Custom plugin to ensure proper MIME type
+    {
+      name: 'configure-server',
+      configureServer(server) {
+        server.middlewares.use((req, res, next) => {
+          if (req.url?.endsWith('.js')) {
+            res.setHeader('Content-Type', 'application/javascript');
+          }
+          next();
+        });
+      }
+    }
   ],
 });
