@@ -92,7 +92,7 @@ registerRoute(audioRoute);
 
 // Cache API calls
 const fetchApiRoute = new Route(
-  ({ request }) => request.url === "https://grondslag.be/api/tongerengetekend",
+  ({ request }) => request.url === "https://grondslag.be/api/tongerengetekend-v2",
   new NetworkFirst({
     cacheName: "datatongerengetekend",
     plugins: [
