@@ -14,7 +14,7 @@ function HomePage() {
 
 
   useEffect(() => {
-    fetch("https://grondslag.be/api/tongerengetekend")
+    fetch("https://grondslag.be/api/tongerengetekend-v2")
       .then((response) => response.json())
       .then((data) => {
         // Shuffle the array and select only 5 random buildings

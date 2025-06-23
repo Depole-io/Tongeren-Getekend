@@ -4,7 +4,7 @@ function GalleryPage() {
   const [buildingData, setBuildingData] = useState([]);
 
   useEffect(() => {
-    fetch("https://grondslag.be/api/tongerengetekend")
+    fetch("https://grondslag.be/api/tongerengetekend-v2")
       .then((response) => response.json())
       .then((data) => setBuildingData(data));
   }, []);

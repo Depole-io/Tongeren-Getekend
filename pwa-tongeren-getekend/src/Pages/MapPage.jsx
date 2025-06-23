@@ -121,7 +121,7 @@ export default function MapPage() {
   const fallbackCoordinates = [50.7833, 5.4703];
 
   useEffect(() => {
-    fetch("https://grondslag.be/api/tongerengetekend")
+    fetch("https://grondslag.be/api/tongerengetekend-v2")
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         return res.json();
