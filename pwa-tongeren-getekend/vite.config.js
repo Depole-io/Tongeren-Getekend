@@ -7,6 +7,10 @@ import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Generate a timestamp-based revision for cache busting
+const timestamp = Date.now();
+
 // https://vite.dev/config/
 export default defineConfig({
   base: '/',
@@ -49,8 +53,8 @@ export default defineConfig({
         swDest: "dist/sw.js",
         injectionPoint: 'self.__WB_MANIFEST',
         additionalManifestEntries: [
-          { url: '/', revision: '1' },
-          { url: '/index.html', revision: '1' }
+          { url: '/', revision: timestamp.toString() },
+          { url: '/index.html', revision: timestamp.toString() }
         ]
       },
       includeAssets: ["favicon.ico", "apple-touch-icon.png", "mask-icon.svg"],

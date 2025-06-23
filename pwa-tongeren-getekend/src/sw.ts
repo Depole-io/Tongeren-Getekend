@@ -4,6 +4,15 @@ import { NavigationRoute, Route, registerRoute } from "workbox-routing";
 import { NetworkFirst, CacheFirst } from "workbox-strategies";
 import { ExpirationPlugin } from "workbox-expiration";
 
+// Cache version for better cache management
+const CACHE_VERSION = 'v2.0.0';
+const CACHE_NAMES = {
+  images: `images-${CACHE_VERSION}`,
+  audio: `audio-files-${CACHE_VERSION}`,
+  api: `datatongerengetekend-v2-${CACHE_VERSION}`,
+  pages: `pages-${CACHE_VERSION}`,
+};
+
 // Extend ServiceWorkerGlobalScope to include the properties we need
 interface ExtendedServiceWorkerGlobalScope extends ServiceWorkerGlobalScope {
   __WB_MANIFEST: Array<{ url: string; revision: string }>;
@@ -39,15 +48,49 @@ precacheAndRoute(self.__WB_MANIFEST);
 
 // Force the Service Worker to take control immediately
 self.skipWaiting();
+
+// Handle service worker updates
 self.addEventListener("activate", ((event: Event) => {
-  (event as ExtendableEvent).waitUntil(self.clients.claim());
+  (event as ExtendableEvent).waitUntil(
+    (async () => {
+      // Clean up old caches
+      const cacheNames = await caches.keys();
+      await Promise.all(
+        cacheNames.map(async (cacheName) => {
+          // Delete old caches that don't match our current version
+          if (!Object.values(CACHE_NAMES).includes(cacheName)) {
+            console.log('Deleting old cache:', cacheName);
+            await caches.delete(cacheName);
+          }
+        })
+      );
+      
+      // Take control of all clients immediately
+      await self.clients.claim();
+      
+      // Notify clients about the update
+      const clients = await self.clients.matchAll();
+      await Promise.all(
+        clients.map(async (client) => {
+          try {
+            await client.postMessage({ 
+              type: "SW_UPDATED", 
+              version: CACHE_VERSION 
+            });
+          } catch (error) {
+            console.error("Error sending update message to client:", error);
+          }
+        })
+      );
+    })()
+  );
 }) as EventListener);
 
 // Cache images
 const imageRoute = new Route(
   ({ request }) => request.destination === "image",
   new CacheFirst({
-    cacheName: "images",
+    cacheName: CACHE_NAMES.images,
     plugins: [
       new ExpirationPlugin({
         maxAgeSeconds: 2 * 60 * 60, // 2 hours
@@ -70,7 +113,7 @@ registerRoute(imageRoute);
 const audioRoute = new Route(
   ({ request }) => request.destination === "audio" || request.url.endsWith(".mp3"),
   new CacheFirst({
-    cacheName: "audio-files",
+    cacheName: CACHE_NAMES.audio,
     plugins: [
       new ExpirationPlugin({
         maxAgeSeconds: 2 * 60 * 60, // 2 hours
@@ -94,10 +137,10 @@ registerRoute(audioRoute);
 const fetchApiRoute = new Route(
   ({ request }) => request.url === "https://grondslag.be/api/tongerengetekend-v2",
   new NetworkFirst({
-    cacheName: "datatongerengetekend-v2",
+    cacheName: CACHE_NAMES.api,
     plugins: [
       new ExpirationPlugin({
-        maxAgeSeconds:  60 * 60, // 1 hours
+        maxAgeSeconds: 60 * 60, // 1 hour
         maxEntries: 1, // Only one API response needed
       }),
       {
@@ -137,10 +180,10 @@ registerRoute(fetchApiRoute);
 // Cache navigation routes
 const navigationRoute = new NavigationRoute(
   new NetworkFirst({
-    cacheName: "pages",
+    cacheName: CACHE_NAMES.pages,
     plugins: [
       new ExpirationPlugin({
-        maxAgeSeconds: 60 * 60, // 1 hours
+        maxAgeSeconds: 60 * 60, // 1 hour
         maxEntries: 50, // Maximum number of pages to keep
       }),
     ],
@@ -157,7 +200,7 @@ self.addEventListener("install", ((event: Event) => {
   self.skipWaiting();
   (event as ExtendableEvent).waitUntil(
     (async () => {
-      const cacheName = "datatongerengetekend-v2";
+      const cacheName = CACHE_NAMES.api;
       const apiUrl = "https://grondslag.be/api/tongerengetekend-v2";
 
       try {
@@ -193,7 +236,7 @@ self.addEventListener("install", ((event: Event) => {
             .filter((url: string | undefined) => !!url);
 
           // Cache each building's navigation route
-          const pagesCache = await caches.open("pages");
+          const pagesCache = await caches.open(CACHE_NAMES.pages);
           await Promise.all(
             buildingUrls.map(async (url) => {
               try {
@@ -211,7 +254,7 @@ self.addEventListener("install", ((event: Event) => {
           );
 
           // Cache each image
-          const imageCache = await caches.open("images");
+          const imageCache = await caches.open(CACHE_NAMES.images);
           await Promise.all(
             imageUrls.map(async (url) => {
               try {
@@ -229,7 +272,7 @@ self.addEventListener("install", ((event: Event) => {
           );
 
           // Cache each soundfile (MP3)
-          const audioCache = await caches.open("audio-files");
+          const audioCache = await caches.open(CACHE_NAMES.audio);
           await Promise.all(
             soundfileUrls.map(async (url: string) => {
               try {

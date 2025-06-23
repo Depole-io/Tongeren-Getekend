@@ -26,8 +26,8 @@ function DetailsPage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const cacheName = "datatongerengetekend";
-      const apiUrl = "https://grondslag.be/api/tongerengetekend";
+      const cacheName = "datatongerengetekend-v2-v2.0.0";
+      const apiUrl = "https://grondslag.be/api/tongerengetekend-v2";
 
       try {
         const cache = await caches.open(cacheName);

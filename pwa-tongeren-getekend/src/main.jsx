@@ -6,14 +6,6 @@ import "./index.css";
 const container = document.getElementById("root");
 const root = createRoot(container);
 
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/dist/sw.js").then((reg) => {
-    console.log("Service Worker Registered", reg);
-  }).catch((err) => {
-    console.log("Error in Registering Service Worker", err);
-  });
-}
-
 function LoadingScreen() {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black z-50">
