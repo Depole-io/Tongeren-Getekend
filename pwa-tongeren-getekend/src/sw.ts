@@ -94,10 +94,10 @@ registerRoute(audioRoute);
 const fetchApiRoute = new Route(
   ({ request }) => request.url === "https://grondslag.be/api/tongerengetekend-v2",
   new NetworkFirst({
-    cacheName: "datatongerengetekend",
+    cacheName: "datatongerengetekend-v2",
     plugins: [
       new ExpirationPlugin({
-        maxAgeSeconds: 2 * 60 * 60, // 2 hours
+        maxAgeSeconds:  60 * 60, // 1 hours
         maxEntries: 1, // Only one API response needed
       }),
       {
@@ -140,7 +140,7 @@ const navigationRoute = new NavigationRoute(
     cacheName: "pages",
     plugins: [
       new ExpirationPlugin({
-        maxAgeSeconds: 2 * 60 * 60, // 2 hours
+        maxAgeSeconds: 60 * 60, // 1 hours
         maxEntries: 50, // Maximum number of pages to keep
       }),
     ],
@@ -157,8 +157,8 @@ self.addEventListener("install", ((event: Event) => {
   self.skipWaiting();
   (event as ExtendableEvent).waitUntil(
     (async () => {
-      const cacheName = "datatongerengetekend";
-      const apiUrl = "https://grondslag.be/api/tongerengetekend";
+      const cacheName = "datatongerengetekend-v2";
+      const apiUrl = "https://grondslag.be/api/tongerengetekend-v2";
 
       try {
         // Notify the main thread that preloading has started with proper error handling
